@@ -1,3 +1,7 @@
+> [!WARNING] 
+> The original app and its code have been deleted. I will try to keep the codebase updated, fix important bugs and add some features.
+> Releases will be signed with my own signature, so a backup is needed to switch from the original app (I may change the package ID later).
+
 ![Repo Banner](https://user-images.githubusercontent.com/87353286/144381080-faf8e557-7909-43a1-a8e2-208936e5a8f8.png)
 
 # BlackHole
