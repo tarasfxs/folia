@@ -81,6 +81,13 @@ flutter:
     # Add assets to the application.
     - assets/
 
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/Poppins-Regular.ttf
+        - asset: assets/Poppins-Medium.otf
+          weight: 600
+
 msix_config:
   display_name: BlackHole
   publisher_display_name: Ankit Sangwan

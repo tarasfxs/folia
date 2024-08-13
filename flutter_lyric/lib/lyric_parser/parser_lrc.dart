@@ -13,7 +13,7 @@ class ParserLrc extends LyricsParse {
   ParserLrc(String lyric) : super(lyric);
 
   @override
-  List<LyricsLineModel> parseLines({bool isMain: true}) {
+  List<LyricsLineModel> parseLines({bool isMain = true}) {
     //读每一行
     var lines = lyric.split("\n");
     if (lines.isEmpty) {
