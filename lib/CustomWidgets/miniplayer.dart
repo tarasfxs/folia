@@ -101,6 +101,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                   horizontal: 2.0,
                   vertical: 1.0,
                 ),
+                color: Colors.black,
                 elevation: 0,
                 child: SizedBox(
                   child: GradientContainer(
