@@ -271,11 +271,8 @@ class _PlayScreenState extends State<PlayScreen> {
                         PageRouteBuilder(
                           opaque: false,
                           pageBuilder: (_, __, ___) => PlayerQueue(
-                            mediaItem: mediaItem,
-                            offline: offline,
                             panelController: _panelController,
                             audioHandler: audioHandler,
-                            colors: gradientColor.value,
                           ),
                         ),
                       ),
@@ -653,10 +650,8 @@ class _PlayScreenState extends State<PlayScreen> {
                           LyricsProvider(
                             mediaItem: mediaItem,
                             width: constraints.maxWidth,
-                            audioHandler: audioHandler,
                             offline: offline,
                             getLyricsOnline: getLyricsOnline,
-                            gradientColor: gradientColor,
                           ),
                         ],
                       ),
@@ -1944,7 +1939,7 @@ class NameNControls extends StatelessWidget {
     final List<String> artists = mediaItem.artist.toString().split(', ');
     return SizedBox(
       width: width,
-      height: height - nowplayingBoxHeight,
+      height: height - nowplayingBoxHeight - 15,
       child: Stack(
         children: [
           Column(
@@ -2239,17 +2234,11 @@ class NameNControls extends StatelessWidget {
 }
 
 class PlayerQueue extends StatelessWidget {
-  final MediaItem mediaItem;
-  final bool offline;
   final PanelController panelController;
   final AudioPlayerHandler audioHandler;
-  final List<Color?>? colors;
   const PlayerQueue({
-    required this.mediaItem,
     required this.audioHandler,
     required this.panelController,
-    this.offline = false,
-    required this.colors,
   });
 
   @override
@@ -2293,16 +2282,12 @@ class LyricsProvider extends StatefulWidget {
   final bool offline;
   final bool getLyricsOnline;
   final double width;
-  final AudioPlayerHandler audioHandler;
-  final ValueNotifier<List<Color?>?> gradientColor;
 
   const LyricsProvider({
     required this.mediaItem,
     required this.width,
     this.offline = false,
     required this.getLyricsOnline,
-    required this.audioHandler,
-    required this.gradientColor,
   });
 
   @override
@@ -2393,16 +2378,16 @@ class _LyricsProviderState extends State<LyricsProvider> {
       fetchLyrics();
     }
     return ValueListenableBuilder(
-      valueListenable: widget.gradientColor,
+      valueListenable: done,
       builder: (
         context,
         value,
         child,
       ) =>
           Padding(
-        padding: const EdgeInsets.only(bottom: 45),
+        padding: EdgeInsets.only(bottom: value ? 45 : 0, top: value ? 15 : 0),
         child: SizedBox(
-          height: 431,
+          height: value ? 431 : 0,
           child: Card(
             margin: const EdgeInsets.only(left: 20, right: 20),
             color: Colors.black.withOpacity(0.05),
@@ -2481,74 +2466,61 @@ class _LyricsProviderState extends State<LyricsProvider> {
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,
                           ),
-                          child: ValueListenableBuilder(
-                            valueListenable: done,
-                            child: const CircularProgressIndicator(),
-                            builder: (
-                              BuildContext context,
-                              bool value,
-                              Widget? child,
-                            ) {
-                              return value
-                                  ? lyrics['lyrics'] == ''
-                                      ? emptyScreen(
-                                          context,
-                                          0,
-                                          ':( ',
-                                          100.0,
-                                          AppLocalizations.of(context)!.lyrics,
-                                          60.0,
-                                          AppLocalizations.of(context)!
-                                              .notAvailable,
-                                          20.0,
-                                          useWhite: true,
+                          child: value
+                              ? lyrics['lyrics'] == ''
+                                  ? emptyScreen(
+                                      context,
+                                      0,
+                                      ':( ',
+                                      100.0,
+                                      AppLocalizations.of(context)!.lyrics,
+                                      60.0,
+                                      AppLocalizations.of(context)!
+                                          .notAvailable,
+                                      20.0,
+                                      useWhite: true,
+                                    )
+                                  : lyrics['type'] == 'text'
+                                      ? SizedBox(
+                                          height: 355,
+                                          child: SingleChildScrollView(
+                                            child: SelectableText(
+                                              '\n' * 2 +
+                                                  lyrics['lyrics'].toString() +
+                                                  '\n' * 2,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                fontSize: 18.0,
+                                                fontFamily: 'Poppins',
+                                              ),
+                                            ),
+                                          ),
                                         )
-                                      : lyrics['type'] == 'text'
-                                          ? SizedBox(
-                                              height: 355,
-                                              child: SingleChildScrollView(
-                                                child: SelectableText(
-                                                  '\n' * 2 +
-                                                      lyrics['lyrics']
-                                                          .toString() +
-                                                      '\n' * 2,
-                                                  textAlign: TextAlign.center,
-                                                  style: const TextStyle(
-                                                    fontSize: 18.0,
-                                                    fontFamily: 'Poppins',
-                                                  ),
+                                      : StreamBuilder<Duration>(
+                                          stream: AudioService.position,
+                                          builder: (context, snapshot) {
+                                            final position =
+                                                snapshot.data ?? Duration.zero;
+                                            return LyricsReader(
+                                              model: lyricsReaderModel,
+                                              position: position.inMilliseconds,
+                                              lyricUi: CustomLyricUi(),
+                                              playing: true,
+                                              size: Size(
+                                                widget.width * 0.85,
+                                                widget.width * 0.85,
+                                              ),
+                                              emptyBuilder: () => Center(
+                                                child: Text(
+                                                  'Lyrics Not Found',
+                                                  style: lyricUI
+                                                      .getOtherMainTextStyle(),
                                                 ),
                                               ),
-                                            )
-                                          : StreamBuilder<Duration>(
-                                              stream: AudioService.position,
-                                              builder: (context, snapshot) {
-                                                final position =
-                                                    snapshot.data ??
-                                                        Duration.zero;
-                                                return LyricsReader(
-                                                  model: lyricsReaderModel,
-                                                  position:
-                                                      position.inMilliseconds,
-                                                  lyricUi: CustomLyricUi(),
-                                                  playing: true,
-                                                  size: Size(
-                                                    widget.width * 0.85,
-                                                    widget.width * 0.85,
-                                                  ),
-                                                  emptyBuilder: () => Center(
-                                                    child: Text(
-                                                      'Lyrics Not Found',
-                                                      style: lyricUI
-                                                          .getOtherMainTextStyle(),
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            )
-                                  : child!;
-                            },
-                          ),
+                                            );
+                                          },
+                                        )
+                              : child,
                         ),
                       ),
                     ),
