@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'package:blackhole/Helpers/config.dart';
@@ -31,6 +31,7 @@ class AppTheme {
     required BuildContext context,
   }) {
     return ThemeData(
+      useMaterial3: false,
       textSelectionTheme: TextSelectionThemeData(
         selectionHandleColor: currentTheme.currentColor(),
         cursorColor: currentTheme.currentColor(),
@@ -48,17 +49,10 @@ class AppTheme {
         ),
       ),
       visualDensity: VisualDensity.adaptivePlatformDensity,
-      appBarTheme: AppBarTheme(
-        backgroundColor: currentTheme.currentColor(),
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarIconBrightness: AppTheme.themeMode == ThemeMode.system
-              ? MediaQuery.platformBrightnessOf(context) == Brightness.dark
-                  ? Brightness.light
-                  : Brightness.dark
-              : AppTheme.themeMode == ThemeMode.dark
-                  ? Brightness.light
-                  : Brightness.dark,
-        ),
+      appBarTheme: const AppBarTheme(
+        color: Color(0xfff5f9ff),
+        foregroundColor: Colors.black,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       cardTheme: CardTheme(
         clipBehavior: Clip.antiAlias,
@@ -89,6 +83,7 @@ class AppTheme {
     required BuildContext context,
   }) {
     return ThemeData(
+      useMaterial3: false,
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: Colors.white,
@@ -117,6 +112,7 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         color: currentTheme.getCanvasColor(),
         foregroundColor: Colors.white,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       canvasColor: currentTheme.getCanvasColor(),
       cardColor: currentTheme.getCardColor(),

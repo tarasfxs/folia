@@ -14,15 +14,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
+import 'package:blackhole/APIs/api.dart';
+import 'package:blackhole/CustomWidgets/image_card.dart';
 import 'package:blackhole/CustomWidgets/like_button.dart';
 import 'package:blackhole/CustomWidgets/on_hover.dart';
+import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
-import 'package:blackhole/Helpers/image_resolution_modifier.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:blackhole/Models/image_quality.dart';
+import 'package:blackhole/Services/player_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HorizontalAlbumsList extends StatelessWidget {
   final List songsList;
@@ -71,9 +75,9 @@ class HorizontalAlbumsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double boxSize =
-        MediaQuery.of(context).size.height > MediaQuery.of(context).size.width
-            ? MediaQuery.of(context).size.width / 2
-            : MediaQuery.of(context).size.height / 2.5;
+        MediaQuery.sizeOf(context).height > MediaQuery.sizeOf(context).width
+            ? MediaQuery.sizeOf(context).width / 2
+            : MediaQuery.sizeOf(context).height / 2.5;
     if (boxSize > 250) boxSize = 250;
     return SizedBox(
       height: boxSize + 15,
@@ -97,70 +101,13 @@ class HorizontalAlbumsList extends StatelessWidget {
                     ),
                     backgroundColor: Colors.transparent,
                     contentPadding: EdgeInsets.zero,
-                    content: Card(
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
+                    content: imageCard(
+                      borderRadius:
                           item['type'] == 'radio_station' ? 1000.0 : 15.0,
-                        ),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: CachedNetworkImage(
-                        fit: BoxFit.cover,
-                        errorWidget: (context, _, __) => const Image(
-                          fit: BoxFit.cover,
-                          image: AssetImage('assets/cover.jpg'),
-                        ),
-                        imageUrl: getImageUrl(item['image'].toString()),
-                        placeholder: (context, url) => Image(
-                          fit: BoxFit.cover,
-                          image: (item['type'] == 'playlist' ||
-                                  item['type'] == 'album')
-                              ? const AssetImage(
-                                  'assets/album.png',
-                                )
-                              : item['type'] == 'artist'
-                                  ? const AssetImage(
-                                      'assets/artist.png',
-                                    )
-                                  : const AssetImage(
-                                      'assets/cover.jpg',
-                                    ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-            onTap: () {
-              onTap(index);
-            },
-            child: SizedBox(
-              width: boxSize - 30,
-              child: HoverBox(
-                child: Card(
-                  elevation: 5,
-                  color: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      item['type'] == 'radio_station' ||
-                              item['type'] == 'artist'
-                          ? 1000.0
-                          : 10.0,
-                    ),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: CachedNetworkImage(
-                    fit: BoxFit.cover,
-                    errorWidget: (context, _, __) => const Image(
-                      fit: BoxFit.cover,
-                      image: AssetImage('assets/cover.jpg'),
-                    ),
-                    imageUrl: getImageUrl(item['image'].toString()),
-                    placeholder: (context, url) => Image(
-                      fit: BoxFit.cover,
-                      image: (item['type'] == 'playlist' ||
+                      imageUrl: item['image'].toString(),
+                      boxDimension: MediaQuery.sizeOf(context).width * 0.8,
+                      imageQuality: ImageQuality.high,
+                      placeholderImage: (item['type'] == 'playlist' ||
                               item['type'] == 'album')
                           ? const AssetImage(
                               'assets/album.png',
@@ -173,7 +120,37 @@ class HorizontalAlbumsList extends StatelessWidget {
                                   'assets/cover.jpg',
                                 ),
                     ),
-                  ),
+                  );
+                },
+              );
+            },
+            onTap: () {
+              onTap(index);
+            },
+            child: SizedBox(
+              width: boxSize - 30,
+              child: HoverBox(
+                child: imageCard(
+                  margin: const EdgeInsets.all(4.0),
+                  borderRadius: item['type'] == 'radio_station' ||
+                          item['type'] == 'artist'
+                      ? 1000.0
+                      : 10.0,
+                  imageUrl: item['image'].toString(),
+                  boxDimension: double.infinity,
+                  imageQuality: ImageQuality.medium,
+                  placeholderImage:
+                      (item['type'] == 'playlist' || item['type'] == 'album')
+                          ? const AssetImage(
+                              'assets/album.png',
+                            )
+                          : item['type'] == 'artist'
+                              ? const AssetImage(
+                                  'assets/artist.png',
+                                )
+                              : const AssetImage(
+                                  'assets/cover.jpg',
+                                ),
                 ),
                 builder: ({
                   required BuildContext context,
@@ -230,6 +207,55 @@ class HorizontalAlbumsList extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                            if (item['type'] == 'artist')
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: Card(
+                                  margin: EdgeInsets.zero,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      1000.0,
+                                    ),
+                                  ),
+                                  color: Colors.black54,
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.podcasts_rounded,
+                                    ),
+                                    tooltip:
+                                        AppLocalizations.of(context)!.playRadio,
+                                    onPressed: () {
+                                      // start radio
+                                      ShowSnackBar().showSnackBar(
+                                        context,
+                                        AppLocalizations.of(context)!
+                                            .connectingRadio,
+                                        duration: const Duration(seconds: 2),
+                                      );
+                                      SaavnAPI().createRadio(
+                                        names: [
+                                          item['title']?.toString() ?? '',
+                                        ],
+                                        language: item['language']?.toString(),
+                                        stationType: 'artist',
+                                      ).then((value) {
+                                        if (value != null) {
+                                          SaavnAPI()
+                                              .getRadioSongs(stationId: value)
+                                              .then((value) {
+                                            PlayerInvoke.init(
+                                              songsList: value,
+                                              index: 0,
+                                              isOffline: false,
+                                              shuffle: true,
+                                            );
+                                          });
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
                             if (isHover &&
                                 (item['type'] == 'song' ||
                                     item['duration'] != null))
@@ -277,7 +303,7 @@ class HorizontalAlbumsList extends StatelessWidget {
                                         .bodySmall!
                                         .color,
                                   ),
-                                )
+                                ),
                             ],
                           ),
                         ),

@@ -1,11 +1,30 @@
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
+
 import 'dart:io';
 
 import 'package:blackhole/CustomWidgets/box_switch_tile.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
-import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/Helpers/picker.dart';
+import 'package:blackhole/constants/languagecodes.dart';
 import 'package:blackhole/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +108,7 @@ class _OthersPageState extends State<OthersPage> {
                         MyApp.of(context).setLocale(
                           Locale.fromSubtags(
                             languageCode:
-                                ConstantCodes.languageCodes[newValue] ?? 'en',
+                                LanguageCodes.languageCodes[newValue] ?? 'en',
                           ),
                         );
                         Hive.box('settings').put('lang', newValue);
@@ -97,7 +116,7 @@ class _OthersPageState extends State<OthersPage> {
                     );
                   }
                 },
-                items: ConstantCodes.languageCodes.keys
+                items: LanguageCodes.languageCodes.keys
                     .map<DropdownMenuItem<String>>((language) {
                   return DropdownMenuItem<String>(
                     value: language,
@@ -353,7 +372,7 @@ class _OthersPageState extends State<OthersPage> {
                           .get('minDuration', defaultValue: 10) as int)
                       .toString(),
                   keyboardType: TextInputType.number,
-                  onSubmitted: (String value) {
+                  onSubmitted: (String value, BuildContext context) {
                     if (value.trim() == '') {
                       value = '0';
                     }
@@ -471,7 +490,7 @@ class _OthersPageState extends State<OthersPage> {
               ),
               keyName: 'checkUpdate',
               isThreeLine: true,
-              defaultValue: false,
+              defaultValue: true,
             ),
             BoxSwitchTile(
               title: Text(
@@ -513,7 +532,7 @@ class _OthersPageState extends State<OthersPage> {
                 ),
                 dense: true,
                 trailing: Text(
-                  '${Hive.box('settings').get("proxyIp")}:${Hive.box('settings').get("proxyPort")}',
+                  '${Hive.box('settings').get("proxyIp", defaultValue: "103.47.67.134")}:${Hive.box('settings').get("proxyPort", defaultValue: 8080)}',
                   style: const TextStyle(fontSize: 12),
                 ),
                 onTap: () {
@@ -521,10 +540,14 @@ class _OthersPageState extends State<OthersPage> {
                     context: context,
                     builder: (BuildContext context) {
                       final controller = TextEditingController(
-                        text: settingsBox.get('proxyIp').toString(),
+                        text: settingsBox
+                            .get('proxyIp', defaultValue: '103.47.67.134')
+                            .toString(),
                       );
                       final controller2 = TextEditingController(
-                        text: settingsBox.get('proxyPort').toString(),
+                        text: settingsBox
+                            .get('proxyPort', defaultValue: 8080)
+                            .toString(),
                       );
                       return AlertDialog(
                         shape: RoundedRectangleBorder(

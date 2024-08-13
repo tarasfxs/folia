@@ -14,18 +14,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
+import 'package:blackhole/CustomWidgets/box_switch_tile.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/backup_restore.dart';
 import 'package:blackhole/Helpers/config.dart';
-import 'package:blackhole/Helpers/countrycodes.dart';
+import 'package:blackhole/constants/countrycodes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
+import 'package:sizer/sizer.dart';
 
 class PrefScreen extends StatefulWidget {
   const PrefScreen({super.key});
@@ -51,13 +53,15 @@ class _PrefScreenState extends State<PrefScreen> {
     'Haryanvi',
     'Rajasthani',
     'Odia',
-    'Assamese'
+    'Assamese',
   ];
   List<bool> isSelected = [true, false];
   List preferredLanguage = Hive.box('settings')
       .get('preferredLanguage', defaultValue: ['Hindi'])?.toList() as List;
   String region =
       Hive.box('settings').get('region', defaultValue: 'India') as String;
+  bool useProxy =
+      Hive.box('settings').get('useProxy', defaultValue: false) as bool;
 
   @override
   Widget build(BuildContext context) {
@@ -67,10 +71,10 @@ class _PrefScreenState extends State<PrefScreen> {
           child: Stack(
             children: [
               Positioned(
-                left: MediaQuery.of(context).size.width / 1.85,
+                left: MediaQuery.sizeOf(context).width / 1.85,
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.width,
+                  width: MediaQuery.sizeOf(context).width,
+                  height: MediaQuery.sizeOf(context).width,
                   child: const Image(
                     image: AssetImage(
                       'assets/icon-white-trans.png',
@@ -114,7 +118,7 @@ class _PrefScreenState extends State<PrefScreen> {
                     ],
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.1,
+                    height: MediaQuery.sizeOf(context).height * 0.1,
                   ),
                   Expanded(
                     child: SingleChildScrollView(
@@ -130,7 +134,7 @@ class _PrefScreenState extends State<PrefScreen> {
                                   text:
                                       '${AppLocalizations.of(context)!.welcome}\n',
                                   style: TextStyle(
-                                    fontSize: 65,
+                                    fontSize: 46.sp,
                                     height: 1.0,
                                     fontWeight: FontWeight.bold,
                                     color:
@@ -140,9 +144,9 @@ class _PrefScreenState extends State<PrefScreen> {
                                     TextSpan(
                                       text:
                                           AppLocalizations.of(context)!.aboard,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 75,
+                                        fontSize: 52.sp,
                                         color: Colors.white,
                                       ),
                                     ),
@@ -150,7 +154,7 @@ class _PrefScreenState extends State<PrefScreen> {
                                       text: '!\n',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 70,
+                                        fontSize: 54.sp,
                                         color: Theme.of(context)
                                             .colorScheme
                                             .secondary,
@@ -159,10 +163,10 @@ class _PrefScreenState extends State<PrefScreen> {
                                     TextSpan(
                                       text:
                                           AppLocalizations.of(context)!.prefReq,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         height: 1.5,
                                         fontWeight: FontWeight.w300,
-                                        fontSize: 20,
+                                        fontSize: 14.sp,
                                         color: Colors.white,
                                       ),
                                     ),
@@ -172,7 +176,7 @@ class _PrefScreenState extends State<PrefScreen> {
                             ],
                           ),
                           SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.15,
+                            height: MediaQuery.sizeOf(context).height * 0.15,
                           ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -204,7 +208,7 @@ class _PrefScreenState extends State<PrefScreen> {
                                             color: Colors.black26,
                                             blurRadius: 5.0,
                                             offset: Offset(0.0, 3.0),
-                                          )
+                                          ),
                                         ],
                                       ),
                                       child: Center(
@@ -404,7 +408,7 @@ class _PrefScreenState extends State<PrefScreen> {
                                             color: Colors.black26,
                                             blurRadius: 5.0,
                                             offset: Offset(0.0, 3.0),
-                                          )
+                                          ),
                                         ],
                                       ),
                                       child: Center(
@@ -422,7 +426,7 @@ class _PrefScreenState extends State<PrefScreen> {
                                         context: context,
                                         builder: (BuildContext context) {
                                           const Map<String, String> codes =
-                                              ConstantCodes.localChartCodes;
+                                              CountryCodes.localChartCodes;
                                           final List<String> countries =
                                               codes.keys.toList();
                                           return BottomGradientContainer(
@@ -472,6 +476,39 @@ class _PrefScreenState extends State<PrefScreen> {
                                                       Navigator.pop(
                                                         context,
                                                       );
+                                                      if (region != 'India') {
+                                                        ShowSnackBar()
+                                                            .showSnackBar(
+                                                          context,
+                                                          AppLocalizations.of(
+                                                            context,
+                                                          )!
+                                                              .useVpn,
+                                                          duration:
+                                                              const Duration(
+                                                            seconds: 10,
+                                                          ),
+                                                          action:
+                                                              SnackBarAction(
+                                                            textColor: Theme.of(
+                                                              context,
+                                                            )
+                                                                .colorScheme
+                                                                .secondary,
+                                                            label: AppLocalizations
+                                                                    .of(context)!
+                                                                .useProxy,
+                                                            onPressed: () {
+                                                              Hive.box(
+                                                                'settings',
+                                                              ).put(
+                                                                'useProxy',
+                                                                true,
+                                                              );
+                                                            },
+                                                          ),
+                                                        );
+                                                      }
                                                       setState(() {});
                                                     },
                                                   ),
@@ -482,6 +519,32 @@ class _PrefScreenState extends State<PrefScreen> {
                                         },
                                       );
                                     },
+                                  ),
+                                  const SizedBox(
+                                    height: 20.0,
+                                  ),
+                                  Visibility(
+                                    visible: region != 'India',
+                                    child: BoxSwitchTile(
+                                      title: Text(
+                                        AppLocalizations.of(
+                                          context,
+                                        )!
+                                            .useProxy,
+                                      ),
+                                      keyName: 'useProxy',
+                                      defaultValue: false,
+                                      contentPadding: EdgeInsets.zero,
+                                      onChanged: ({
+                                        required bool val,
+                                        required Box box,
+                                      }) {
+                                        useProxy = val;
+                                        setState(
+                                          () {},
+                                        );
+                                      },
+                                    ),
                                   ),
                                   const SizedBox(
                                     height: 20.0,
@@ -509,7 +572,7 @@ class _PrefScreenState extends State<PrefScreen> {
                                             color: Colors.black26,
                                             blurRadius: 5.0,
                                             offset: Offset(0.0, 3.0),
-                                          )
+                                          ),
                                         ],
                                       ),
                                       child: Center(
@@ -529,7 +592,7 @@ class _PrefScreenState extends State<PrefScreen> {
                             ],
                           ),
                           SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.1,
+                            height: MediaQuery.sizeOf(context).height * 0.1,
                           ),
                         ],
                       ),

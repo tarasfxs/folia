@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'dart:math';
@@ -61,7 +61,7 @@ class _EqualizerState extends State<Equalizer> {
             ),
             if (enabled)
               SizedBox(
-                height: MediaQuery.of(context).size.height / 2,
+                height: MediaQuery.sizeOf(context).height / 2,
                 child: EqualizerControls(
                   audioHandler: audioHandler,
                 ),

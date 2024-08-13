@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
@@ -57,10 +57,10 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Stack(
             children: [
               Positioned(
-                left: MediaQuery.of(context).size.width / 1.85,
+                left: MediaQuery.sizeOf(context).width / 1.85,
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.width,
+                  width: MediaQuery.sizeOf(context).width,
+                  height: MediaQuery.sizeOf(context).width,
                   child: const Image(
                     image: AssetImage(
                       'assets/icon-white-trans.png',
@@ -152,7 +152,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               ],
                             ),
                             SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.1,
+                              height: MediaQuery.sizeOf(context).height * 0.1,
                             ),
                             Column(
                               children: [
@@ -172,7 +172,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                         color: Colors.black26,
                                         blurRadius: 5.0,
                                         offset: Offset(0.0, 3.0),
-                                      )
+                                      ),
                                     ],
                                   ),
                                   child: TextField(
@@ -242,7 +242,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                           color: Colors.black26,
                                           blurRadius: 5.0,
                                           offset: Offset(0.0, 3.0),
-                                        )
+                                        ),
                                       ],
                                     ),
                                     child: Center(

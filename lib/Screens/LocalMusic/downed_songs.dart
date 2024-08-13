@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'dart:io';
@@ -24,7 +24,6 @@ import 'package:blackhole/CustomWidgets/custom_physics.dart';
 import 'package:blackhole/CustomWidgets/data_search.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
-import 'package:blackhole/CustomWidgets/miniplayer.dart';
 import 'package:blackhole/CustomWidgets/playlist_head.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/Helpers/audio_query.dart';
@@ -84,6 +83,7 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   List includedExcludedPaths = Hive.box('settings')
       .get('includedExcludedPaths', defaultValue: []) as List;
   TabController? _tcontroller;
+  int _currentTabIndex = 0;
   OfflineAudioQuery offlineAudioQuery = OfflineAudioQuery();
   List<PlaylistModel> playlistDetails = [];
 
@@ -105,6 +105,12 @@ class _DownloadedSongsState extends State<DownloadedSongs>
   void initState() {
     _tcontroller =
         TabController(length: widget.showPlaylists ? 6 : 5, vsync: this);
+    _tcontroller!.addListener(() {
+      if ((_tcontroller!.previousIndex != 0 && _tcontroller!.index == 0) ||
+          (_tcontroller!.previousIndex == 0)) {
+        setState(() => _currentTabIndex = _tcontroller!.index);
+      }
+    });
     getData();
     super.initState();
   }
@@ -142,7 +148,9 @@ class _DownloadedSongsState extends State<DownloadedSongs>
             .where(
               (i) =>
                   (i.duration ?? 60000) > 1000 * minDuration &&
-                  (i.isMusic! || i.isPodcast! || i.isAudioBook!) &&
+                  ((i.isMusic ?? true) ||
+                      (i.isPodcast ?? false) ||
+                      (i.isAudioBook ?? false)) &&
                   (includeOrExclude
                       ? checkIncludedOrExcluded(i)
                       : !checkIncludedOrExcluded(i)),
@@ -207,32 +215,26 @@ class _DownloadedSongsState extends State<DownloadedSongs>
         _songs.sort(
           (a, b) => a.displayName.compareTo(b.displayName),
         );
-        break;
       case 1:
         _songs.sort(
           (a, b) => a.dateAdded.toString().compareTo(b.dateAdded.toString()),
         );
-        break;
       case 2:
         _songs.sort(
           (a, b) => a.album.toString().compareTo(b.album.toString()),
         );
-        break;
       case 3:
         _songs.sort(
           (a, b) => a.artist.toString().compareTo(b.artist.toString()),
         );
-        break;
       case 4:
         _songs.sort(
           (a, b) => a.duration.toString().compareTo(b.duration.toString()),
         );
-        break;
       case 5:
         _songs.sort(
           (a, b) => a.size.toString().compareTo(b.size.toString()),
         );
-        break;
       default:
         _songs.sort(
           (a, b) => a.dateAdded.toString().compareTo(b.dateAdded.toString()),
@@ -246,211 +248,244 @@ class _DownloadedSongsState extends State<DownloadedSongs>
     Logger.root.info('Done Sorting songs');
   }
 
+  Future<void> deleteSong(SongModel song) async {
+    final audioFile = File(song.data);
+    if (_albums[song.album]!.length == 1) {
+      _sortedAlbumKeysList.remove(song.album);
+    }
+    _albums[song.album]!.remove(song);
+
+    if (_artists[song.artist]!.length == 1) {
+      _sortedArtistKeysList.remove(song.artist);
+    }
+    _artists[song.artist]!.remove(song);
+
+    if (_genres[song.genre]!.length == 1) {
+      _sortedGenreKeysList.remove(song.genre);
+    }
+    _genres[song.genre]!.remove(song);
+
+    if (_folders[audioFile.parent.path]!.length == 1) {
+      _sortedFolderKeysList.remove(audioFile.parent.path);
+    }
+    _folders[audioFile.parent.path]!.remove(song);
+
+    _songs.remove(song);
+    try {
+      await audioFile.delete();
+      ShowSnackBar().showSnackBar(
+        context,
+        '${AppLocalizations.of(context)!.deleted} ${song.title}',
+      );
+    } catch (e) {
+      Logger.root.severe('Failed to delete $audioFile.path', e);
+      ShowSnackBar().showSnackBar(
+        context,
+        duration: const Duration(seconds: 5),
+        '${AppLocalizations.of(context)!.failedDelete}: ${audioFile.path}\nError: $e',
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GradientContainer(
-      child: Column(
-        children: [
-          Expanded(
-            child: DefaultTabController(
-              length: widget.showPlaylists ? 6 : 5,
-              child: Scaffold(
-                backgroundColor: Colors.transparent,
-                appBar: AppBar(
-                  title: Text(
-                    widget.title ?? AppLocalizations.of(context)!.myMusic,
-                  ),
-                  bottom: TabBar(
-                    isScrollable: widget.showPlaylists,
-                    controller: _tcontroller,
-                    indicatorSize: TabBarIndicatorSize.label,
-                    tabs: [
-                      Tab(
-                        text: AppLocalizations.of(context)!.songs,
-                      ),
-                      Tab(
-                        text: AppLocalizations.of(context)!.albums,
-                      ),
-                      Tab(
-                        text: AppLocalizations.of(context)!.artists,
-                      ),
-                      Tab(
-                        text: AppLocalizations.of(context)!.genres,
-                      ),
-                      Tab(
-                        text: AppLocalizations.of(context)!.folders,
-                      ),
-                      if (widget.showPlaylists)
-                        Tab(
-                          text: AppLocalizations.of(context)!.playlists,
-                        ),
-                      //     Tab(
-                      //       text: AppLocalizations.of(context)!.videos,
-                      //     )
-                    ],
-                  ),
-                  actions: [
-                    IconButton(
-                      icon: const Icon(CupertinoIcons.search),
-                      tooltip: AppLocalizations.of(context)!.search,
-                      onPressed: () {
-                        showSearch(
-                          context: context,
-                          delegate: DataSearch(
-                            data: _songs,
-                            tempPath: tempPath!,
-                          ),
-                        );
-                      },
-                    ),
-                    PopupMenuButton(
-                      icon: const Icon(Icons.sort_rounded),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      ),
-                      onSelected: (int value) async {
-                        if (value < 6) {
-                          sortValue = value;
-                          Hive.box('settings').put('sortValue', value);
-                        } else {
-                          orderValue = value - 6;
-                          Hive.box('settings').put('orderValue', orderValue);
-                        }
-                        await sortSongs(sortValue, orderValue);
-                        setState(() {});
-                      },
-                      itemBuilder: (context) {
-                        final List<String> sortTypes = [
-                          AppLocalizations.of(context)!.displayName,
-                          AppLocalizations.of(context)!.dateAdded,
-                          AppLocalizations.of(context)!.album,
-                          AppLocalizations.of(context)!.artist,
-                          AppLocalizations.of(context)!.duration,
-                          AppLocalizations.of(context)!.size,
-                        ];
-                        final List<String> orderTypes = [
-                          AppLocalizations.of(context)!.inc,
-                          AppLocalizations.of(context)!.dec,
-                        ];
-                        final menuList = <PopupMenuEntry<int>>[];
-                        menuList.addAll(
-                          sortTypes
-                              .map(
-                                (e) => PopupMenuItem(
-                                  value: sortTypes.indexOf(e),
-                                  child: Row(
-                                    children: [
-                                      if (sortValue == sortTypes.indexOf(e))
-                                        Icon(
-                                          Icons.check_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      else
-                                        const SizedBox(),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        e,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        );
-                        menuList.add(
-                          const PopupMenuDivider(
-                            height: 10,
-                          ),
-                        );
-                        menuList.addAll(
-                          orderTypes
-                              .map(
-                                (e) => PopupMenuItem(
-                                  value:
-                                      sortTypes.length + orderTypes.indexOf(e),
-                                  child: Row(
-                                    children: [
-                                      if (orderValue == orderTypes.indexOf(e))
-                                        Icon(
-                                          Icons.check_rounded,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.grey[700],
-                                        )
-                                      else
-                                        const SizedBox(),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        e,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        );
-                        return menuList;
-                      },
-                    ),
-                  ],
-                  centerTitle: true,
-                  backgroundColor:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.transparent
-                          : Theme.of(context).colorScheme.secondary,
-                  elevation: 0,
-                ),
-                body: !added
-                    ? const Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : TabBarView(
-                        physics: const CustomPhysics(),
-                        controller: _tcontroller,
-                        children: [
-                          SongsTab(
-                            songs: _songs,
-                            playlistId: widget.playlistId,
-                            playlistName: widget.title,
-                            tempPath: tempPath!,
-                          ),
-                          AlbumsTab(
-                            albums: _albums,
-                            albumsList: _sortedAlbumKeysList,
-                            tempPath: tempPath!,
-                          ),
-                          AlbumsTab(
-                            albums: _artists,
-                            albumsList: _sortedArtistKeysList,
-                            tempPath: tempPath!,
-                          ),
-                          AlbumsTab(
-                            albums: _genres,
-                            albumsList: _sortedGenreKeysList,
-                            tempPath: tempPath!,
-                          ),
-                          AlbumsTab(
-                            albums: _folders,
-                            albumsList: _sortedFolderKeysList,
-                            tempPath: tempPath!,
-                          ),
-                          if (widget.showPlaylists)
-                            LocalPlaylists(
-                              playlistDetails: playlistDetails,
-                              offlineAudioQuery: offlineAudioQuery,
-                            ),
-                          // videosTab(),
-                        ],
-                      ),
-              ),
+      child: DefaultTabController(
+        length: widget.showPlaylists ? 6 : 5,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            title: Text(
+              widget.title ?? AppLocalizations.of(context)!.myMusic,
             ),
+            bottom: TabBar(
+              isScrollable: widget.showPlaylists,
+              controller: _tcontroller,
+              indicatorSize: TabBarIndicatorSize.label,
+              tabs: [
+                Tab(
+                  text: AppLocalizations.of(context)!.songs,
+                ),
+                Tab(
+                  text: AppLocalizations.of(context)!.albums,
+                ),
+                Tab(
+                  text: AppLocalizations.of(context)!.artists,
+                ),
+                Tab(
+                  text: AppLocalizations.of(context)!.genres,
+                ),
+                Tab(
+                  text: AppLocalizations.of(context)!.folders,
+                ),
+                if (widget.showPlaylists)
+                  Tab(
+                    text: AppLocalizations.of(context)!.playlists,
+                  ),
+                //     Tab(
+                //       text: AppLocalizations.of(context)!.videos,
+                //     )
+              ],
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(CupertinoIcons.search),
+                tooltip: AppLocalizations.of(context)!.search,
+                onPressed: () {
+                  showSearch(
+                    context: context,
+                    delegate: DataSearch(
+                      data: _songs,
+                      tempPath: tempPath!,
+                    ),
+                  );
+                },
+              ),
+              if (_currentTabIndex == 0)
+                PopupMenuButton(
+                  icon: const Icon(Icons.sort_rounded),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                  ),
+                  onSelected: (int value) async {
+                    if (value < 6) {
+                      sortValue = value;
+                      Hive.box('settings').put('sortValue', value);
+                    } else {
+                      orderValue = value - 6;
+                      Hive.box('settings').put('orderValue', orderValue);
+                    }
+                    await sortSongs(sortValue, orderValue);
+                    setState(() {});
+                  },
+                  itemBuilder: (context) {
+                    final List<String> sortTypes = [
+                      AppLocalizations.of(context)!.displayName,
+                      AppLocalizations.of(context)!.dateAdded,
+                      AppLocalizations.of(context)!.album,
+                      AppLocalizations.of(context)!.artist,
+                      AppLocalizations.of(context)!.duration,
+                      AppLocalizations.of(context)!.size,
+                    ];
+                    final List<String> orderTypes = [
+                      AppLocalizations.of(context)!.inc,
+                      AppLocalizations.of(context)!.dec,
+                    ];
+                    final menuList = <PopupMenuEntry<int>>[];
+                    menuList.addAll(
+                      sortTypes
+                          .map(
+                            (e) => PopupMenuItem(
+                              value: sortTypes.indexOf(e),
+                              child: Row(
+                                children: [
+                                  if (sortValue == sortTypes.indexOf(e))
+                                    Icon(
+                                      Icons.check_rounded,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.grey[700],
+                                    )
+                                  else
+                                    const SizedBox(),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    e,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    );
+                    menuList.add(
+                      const PopupMenuDivider(
+                        height: 10,
+                      ),
+                    );
+                    menuList.addAll(
+                      orderTypes
+                          .map(
+                            (e) => PopupMenuItem(
+                              value: sortTypes.length + orderTypes.indexOf(e),
+                              child: Row(
+                                children: [
+                                  if (orderValue == orderTypes.indexOf(e))
+                                    Icon(
+                                      Icons.check_rounded,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.grey[700],
+                                    )
+                                  else
+                                    const SizedBox(),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    e,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    );
+                    return menuList;
+                  },
+                ),
+            ],
+            centerTitle: true,
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? Colors.transparent
+                : Theme.of(context).colorScheme.secondary,
+            elevation: 0,
           ),
-          MiniPlayer(),
-        ],
+          body: !added
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : TabBarView(
+                  physics: const CustomPhysics(),
+                  controller: _tcontroller,
+                  children: [
+                    SongsTab(
+                      songs: _songs,
+                      playlistId: widget.playlistId,
+                      playlistName: widget.title,
+                      tempPath: tempPath!,
+                      deleteSong: deleteSong,
+                    ),
+                    AlbumsTab(
+                      albums: _albums,
+                      albumsList: _sortedAlbumKeysList,
+                      tempPath: tempPath!,
+                    ),
+                    AlbumsTab(
+                      albums: _artists,
+                      albumsList: _sortedArtistKeysList,
+                      tempPath: tempPath!,
+                    ),
+                    AlbumsTab(
+                      albums: _genres,
+                      albumsList: _sortedGenreKeysList,
+                      tempPath: tempPath!,
+                    ),
+                    AlbumsTab(
+                      albums: _folders,
+                      albumsList: _sortedFolderKeysList,
+                      tempPath: tempPath!,
+                      isFolder: true,
+                    ),
+                    if (widget.showPlaylists)
+                      LocalPlaylists(
+                        playlistDetails: playlistDetails,
+                        offlineAudioQuery: offlineAudioQuery,
+                      ),
+                    // videosTab(),
+                  ],
+                ),
+        ),
       ),
     );
   }
@@ -695,10 +730,12 @@ class SongsTab extends StatefulWidget {
   final int? playlistId;
   final String? playlistName;
   final String tempPath;
+  final Function(SongModel) deleteSong;
   const SongsTab({
     super.key,
     required this.songs,
     required this.tempPath,
+    required this.deleteSong,
     this.playlistId,
     this.playlistName,
   });
@@ -1200,49 +1237,9 @@ class _SongsTabState extends State<SongsTab>
                             //         },
                             //       );
                             //     }
-                            //     if (value == 2) {
-                            //       try {
-                            //         File(_cachedSongs[index]['id'].toString()).delete();
-                            //         ShowSnackBar().showSnackBar(
-                            //           context,
-                            //           'Deleted ${_cachedSongs[index]['id'].split('/').last}',
-                            //         );
-                            //         if (_cachedAlbums[_cachedSongs[index]['album']]
-                            //                 .length ==
-                            //             1) {
-                            //           sortedCachedAlbumKeysList
-                            //               .remove(_cachedSongs[index]['album']);
-                            //         }
-                            //         _cachedAlbums[_cachedSongs[index]['album']]
-                            //             .remove(_cachedSongs[index]);
-
-                            //         if (_cachedArtists[_cachedSongs[index]['artist']]
-                            //                 .length ==
-                            //             1) {
-                            //           sortedCachedArtistKeysList
-                            //               .remove(_cachedSongs[index]['artist']);
-                            //         }
-                            //         _cachedArtists[_cachedSongs[index]['artist']]
-                            //             .remove(_cachedSongs[index]);
-
-                            //         if (_cachedGenres[_cachedSongs[index]['genre']]
-                            //                 .length ==
-                            //             1) {
-                            //           sortedCachedGenreKeysList
-                            //               .remove(_cachedSongs[index]['genre']);
-                            //         }
-                            //         _cachedGenres[_cachedSongs[index]['genre']]
-                            //             .remove(_cachedSongs[index]);
-
-                            //         _cachedSongs.remove(_cachedSongs[index]);
-                            //       } catch (e) {
-                            //         ShowSnackBar().showSnackBar(
-                            //           context,
-                            //           'Failed to delete ${_cachedSongs[index]['id']}',
-                            //         );
-                            //       }
-                            //       setState(() {});
-                            // }
+                            if (value == -1) {
+                              await widget.deleteSong(widget.songs[index]);
+                            }
                           },
                           itemBuilder: (context) => [
                             PopupMenuItem(
@@ -1290,16 +1287,16 @@ class _SongsTabState extends State<SongsTab>
                             //         ],
                             //       ),
                             //     ),
-                            //     PopupMenuItem(
-                            //       value: 2,
-                            //       child: Row(
-                            //         children: const [
-                            //           Icon(Icons.delete_rounded),
-                            //           const SizedBox(width: 10.0),
-                            //           Text('Delete'),
-                            //         ],
-                            //       ),
-                            //     ),
+                            PopupMenuItem(
+                              value: -1,
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.delete_rounded),
+                                  const SizedBox(width: 10.0),
+                                  Text(AppLocalizations.of(context)!.delete),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                         onTap: () {
@@ -1324,11 +1321,13 @@ class AlbumsTab extends StatefulWidget {
   final Map<String, List<SongModel>> albums;
   final List<String> albumsList;
   final String tempPath;
+  final bool isFolder;
   const AlbumsTab({
     super.key,
     required this.albums,
     required this.albumsList,
     required this.tempPath,
+    this.isFolder = false,
   });
 
   @override
@@ -1376,6 +1375,11 @@ class _AlbumsTabState extends State<AlbumsTab>
               itemExtent: 70.0,
               itemCount: widget.albumsList.length,
               itemBuilder: (context, index) {
+                String title = widget.albumsList[index];
+                if (widget.isFolder && title.length > 35) {
+                  final splits = title.split('/');
+                  title = '${splits.first}/.../${splits.last}';
+                }
                 return ListTile(
                   leading: OfflineAudioQuery.offlineArtworkWidget(
                     id: widget.albums[widget.albumsList[index]]![0].id,
@@ -1385,7 +1389,7 @@ class _AlbumsTabState extends State<AlbumsTab>
                         .albums[widget.albumsList[index]]![0].displayNameWOExt,
                   ),
                   title: Text(
-                    widget.albumsList[index],
+                    title,
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(

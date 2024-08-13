@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'dart:convert';
@@ -38,7 +38,8 @@ class FormatResponse {
     final String decoded = utf8
         .decode(decrypted)
         .replaceAll(RegExp(r'\.mp4.*'), '.mp4')
-        .replaceAll(RegExp(r'\.m4a.*'), '.m4a');
+        .replaceAll(RegExp(r'\.m4a.*'), '.m4a')
+        .replaceAll(RegExp(r'\.mp3.*'), '.mp3');
     return decoded.replaceAll('http:', 'https:');
   }
 
@@ -56,7 +57,6 @@ class FormatResponse {
         case 'show':
         case 'mix':
           response = await formatSingleSongResponse(responseList[i] as Map);
-          break;
         default:
           break;
       }
@@ -209,7 +209,7 @@ class FormatResponse {
             : response['more_info']['music'],
         'image': getImageUrl(response['image'].toString()),
         'perma_url': response['perma_url'],
-        'url': decode(response['encrypted_media_url'].toString())
+        'url': decode(response['encrypted_media_url'].toString()),
       };
     } catch (e) {
       Logger.root.severe('Error inside FormatSingleAlbumSongResponse: $e');
@@ -227,16 +227,12 @@ class FormatResponse {
       switch (type) {
         case 'album':
           response = await formatSingleAlbumResponse(responseList[i] as Map);
-          break;
         case 'artist':
           response = await formatSingleArtistResponse(responseList[i] as Map);
-          break;
         case 'playlist':
           response = await formatSinglePlaylistResponse(responseList[i] as Map);
-          break;
         case 'show':
           response = await formatSingleShowResponse(responseList[i] as Map);
-          break;
       }
       if (response!.containsKey('Error')) {
         Logger.root.severe(
@@ -526,7 +522,7 @@ class FormatResponse {
         'radio',
         'city_mod',
         'artist_recos',
-        ...promoList
+        ...promoList,
       ];
       data['collections_temp'] = promoListTemp;
     } catch (e) {
@@ -537,13 +533,15 @@ class FormatResponse {
 
   static Future<Map> formatPromoLists(Map data) async {
     try {
-      final List promoList = data['collections_temp'] as List;
-      for (int i = 0; i < promoList.length; i++) {
-        data[promoList[i]] =
-            await formatSongsInList(data[promoList[i]] as List);
+      if (data.isNotEmpty) {
+        final List promoList = data['collections_temp'] as List? ?? [];
+        for (int i = 0; i < promoList.length; i++) {
+          data[promoList[i]] =
+              await formatSongsInList(data[promoList[i]] as List);
+        }
+        data['collections'].addAll(promoList);
+        data['collections_temp'] = [];
       }
-      data['collections'].addAll(promoList);
-      data['collections_temp'] = [];
     } catch (e) {
       Logger.root.severe('Error inside formatPromoLists: $e');
     }

@@ -14,12 +14,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'package:blackhole/APIs/api.dart';
 import 'package:blackhole/APIs/spotify_api.dart';
 import 'package:blackhole/Helpers/audio_query.dart';
+import 'package:blackhole/Helpers/matcher.dart';
 import 'package:blackhole/Helpers/spotify_helper.dart';
 import 'package:blackhole/Screens/Common/song_list.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
@@ -36,6 +37,59 @@ class HandleRoute {
   static Route? handleRoute(String? url) {
     Logger.root.info('received route url: $url');
     if (url == null) return null;
+    // blackhole specific url
+    // blackhole://blackhole/search?q=stay+with+me
+    if (url.startsWith('/search')) {
+      final uri = Uri.parse(url);
+      final String? title = uri.queryParameters['title']?.toString();
+      final String? artist = uri.queryParameters['artist']?.toString();
+      final bool autoplay = uri.queryParameters['autoplay'] == 'true';
+      final String? query =
+          title != null && artist != null ? '$title - $artist' : title;
+
+      Logger.root.info('received search query: $query');
+
+      if (query != null) {
+        if (autoplay) {
+          SaavnAPI()
+              .fetchSongSearchResults(
+            searchQuery: query,
+            count: 3,
+          )
+              .then((Map data) {
+            final List result = data['songs'] as List;
+            final index = findBestMatch(
+              result,
+              {
+                'title': title,
+                'artist': artist ?? '',
+              },
+            );
+            if (index != -1) {
+              // found a song
+              PlayerInvoke.init(
+                songsList: [result[index] as Map],
+                index: 0,
+                isOffline: false,
+              );
+            } else {
+              return PageRouteBuilder(
+                pageBuilder: (_, __, ___) => SearchPage(
+                  query: query,
+                  fromDirectSearch: true,
+                ),
+              );
+            }
+          });
+        }
+        return PageRouteBuilder(
+          pageBuilder: (_, __, ___) => SearchPage(
+            query: query,
+            fromDirectSearch: true,
+          ),
+        );
+      }
+    }
     if (url.contains('saavn')) {
       final RegExpMatch? songResult =
           RegExp(r'.*saavn.com.*?\/(song)\/.*?\/(.*)').firstMatch('$url?');
@@ -182,7 +236,9 @@ class YtUrlHandler extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (type == 'v') {
-      YouTubeServices().formatVideoFromId(id: id).then((Map? response) async {
+      YouTubeServices.instance
+          .formatVideoFromId(id: id)
+          .then((Map? response) async {
         if (response != null) {
           PlayerInvoke.init(
             songsList: [response],

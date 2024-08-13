@@ -1,3 +1,22 @@
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
+
 import 'package:blackhole/CustomWidgets/box_switch_tile.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/popup.dart';
@@ -127,7 +146,7 @@ class _ThemePageState extends State<ThemePage> {
                           0.0,
                           3.0,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -179,7 +198,7 @@ class _ThemePageState extends State<ThemePage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                for (int hue in [100, 200, 400, 700])
+                                for (final hue in [100, 200, 400, 700])
                                   GestureDetector(
                                     onTap: () {
                                       themeColor = colors[index];
@@ -195,11 +214,10 @@ class _ThemePageState extends State<ThemePage> {
                                       Navigator.pop(context);
                                     },
                                     child: Container(
-                                      width: MediaQuery.of(context).size.width *
+                                      width: MediaQuery.sizeOf(context).width *
                                           0.125,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                              0.125,
+                                      height: MediaQuery.sizeOf(context).width *
+                                          0.125,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(
                                           100.0,
@@ -216,7 +234,7 @@ class _ThemePageState extends State<ThemePage> {
                                               0.0,
                                               3.0,
                                             ),
-                                          )
+                                          ),
                                         ],
                                       ),
                                       child: (themeColor == colors[index] &&
@@ -286,7 +304,7 @@ class _ThemePageState extends State<ThemePage> {
                                 0.0,
                                 3.0,
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -329,9 +347,9 @@ class _ThemePageState extends State<ThemePage> {
                                     );
                                   },
                                   child: Container(
-                                    width: MediaQuery.of(context).size.width *
+                                    width: MediaQuery.sizeOf(context).width *
                                         0.125,
-                                    height: MediaQuery.of(context).size.width *
+                                    height: MediaQuery.sizeOf(context).width *
                                         0.125,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(
@@ -403,7 +421,7 @@ class _ThemePageState extends State<ThemePage> {
                                 0.0,
                                 3.0,
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -446,9 +464,9 @@ class _ThemePageState extends State<ThemePage> {
                                     );
                                   },
                                   child: Container(
-                                    width: MediaQuery.of(context).size.width *
+                                    width: MediaQuery.sizeOf(context).width *
                                         0.125,
-                                    height: MediaQuery.of(context).size.width *
+                                    height: MediaQuery.sizeOf(context).width *
                                         0.125,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(
@@ -520,7 +538,7 @@ class _ThemePageState extends State<ThemePage> {
                                 0.0,
                                 3.0,
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -562,9 +580,9 @@ class _ThemePageState extends State<ThemePage> {
                                     );
                                   },
                                   child: Container(
-                                    width: MediaQuery.of(context).size.width *
+                                    width: MediaQuery.sizeOf(context).width *
                                         0.125,
-                                    height: MediaQuery.of(context).size.width *
+                                    height: MediaQuery.sizeOf(context).width *
                                         0.125,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(
@@ -927,7 +945,7 @@ class _ThemePageState extends State<ThemePage> {
                                 Icons.delete_rounded,
                               ),
                             ),
-                          )
+                          ),
                       ],
                     ),
                   );
@@ -955,7 +973,7 @@ class _ThemePageState extends State<ThemePage> {
                       context,
                     )!
                         .enterThemeName,
-                    onSubmitted: (value) {
+                    onSubmitted: (String value, BuildContext context) {
                       if (value == '') return;
                       currentTheme.saveTheme(value);
                       currentTheme.setInitialTheme(value);
@@ -980,7 +998,7 @@ class _ThemePageState extends State<ThemePage> {
                 },
                 dense: true,
               ),
-            )
+            ),
           ],
         ),
       ),

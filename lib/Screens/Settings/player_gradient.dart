@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
+import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/Helpers/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -38,19 +39,26 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
     'halfDark',
     'fullLight',
     'fullDark',
-    'fullMix'
+    'fullDarkOnly',
+    'fullMix',
+    'fullMixDarker',
+    'fullMixBlack',
   ];
-  final List<String> recommended = [
+  final Set<String> recommended = {
     'halfDark',
     'fullDark',
-  ];
+    'fullMixBlack',
+  };
   final Map<String, String> typeMapping = {
     'simple': 'Simple',
     'halfLight': 'Half Light',
     'halfDark': 'Half Dark',
     'fullLight': 'Full Light',
     'fullDark': 'Full Dark',
+    'fullDarkOnly': 'Full Dark Only',
     'fullMix': 'Full Mix',
+    'fullMixDarker': 'Full Mix Darker',
+    'fullMixBlack': 'Full Mix Black',
   };
   final List<Color?> gradientColor = [Colors.lightGreen, Colors.teal];
   final MyTheme currentTheme = GetIt.I<MyTheme>();
@@ -62,6 +70,8 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         title: Text(
           AppLocalizations.of(
             context,
@@ -72,10 +82,13 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
       body: SafeArea(
         child: GridView.count(
           shrinkWrap: true,
-          crossAxisCount: MediaQuery.of(context).size.width >
-                  MediaQuery.of(context).size.height
+          crossAxisCount: MediaQuery.sizeOf(context).width >
+                  MediaQuery.sizeOf(context).height
               ? 6
               : 3,
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          mainAxisSpacing: 5.0,
+          crossAxisSpacing: 5.0,
           physics: const BouncingScrollPhysics(),
           childAspectRatio: 0.6,
           children: types
@@ -97,7 +110,7 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
                             borderRadius: BorderRadius.circular(15.0),
                             side: BorderSide(
                               color: Theme.of(context).colorScheme.primary,
-                              width: gradientType == type ? 2.0 : 0.5,
+                              width: gradientType == type ? 1.0 : 0.3,
                             ),
                           ),
                           clipBehavior: Clip.antiAlias,
@@ -126,16 +139,24 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
                                             Brightness.dark
                                         ? [
                                             if (type == 'halfDark' ||
-                                                type == 'fullDark')
+                                                type == 'fullDark' ||
+                                                type == 'fullDarkOnly')
                                               gradientColor[1] ??
                                                   Colors.grey[900]!
                                             else
                                               gradientColor[0] ??
                                                   Colors.grey[900]!,
-                                            if (type == 'fullMix')
+                                            if (type == 'fullMix' ||
+                                                type == 'fullMixDarker' ||
+                                                type == 'fullMixBlack' ||
+                                                type == 'fullDarkOnly')
                                               gradientColor[1] ?? Colors.black
                                             else
-                                              Colors.black
+                                              Colors.black,
+                                            if (type == 'fullMixDarker')
+                                              gradientColor[1] ?? Colors.black,
+                                            if (type == 'fullMixBlack')
+                                              Colors.black,
                                           ]
                                         : [
                                             gradientColor[0] ??
@@ -152,65 +173,41 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
                               flex: 3,
                             ),
                             Center(
-                              child: Card(
-                                elevation: 5,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 15.0,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                clipBehavior: Clip.antiAlias,
+                              child: GradientCard(
                                 child: FittedBox(
                                   child: SizedBox.square(
                                     dimension:
-                                        MediaQuery.of(context).size.width / 5,
+                                        MediaQuery.sizeOf(context).width / 5,
+                                    child: gradientType == type
+                                        ? const Icon(Icons.check_rounded)
+                                        : null,
                                   ),
                                 ),
                               ),
                             ),
                             const Spacer(
-                              flex: 3,
+                              flex: 2,
                             ),
                             Center(
-                              child: Card(
-                                elevation: 5,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                child: FittedBox(
-                                  child: SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width / 5,
-                                    height:
-                                        MediaQuery.of(context).size.width / 25,
-                                  ),
+                              child: Text(
+                                typeMapping[type]!,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
                             const Spacer(),
                             Center(
-                              child: Card(
-                                elevation: 5,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 20.0,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                clipBehavior: Clip.antiAlias,
-                                child: FittedBox(
-                                  child: SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width / 5,
-                                    height:
-                                        MediaQuery.of(context).size.width / 25,
-                                  ),
-                                ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.skip_previous_rounded),
+                                  if (gradientType == type)
+                                    const Icon(Icons.pause_rounded)
+                                  else
+                                    const Icon(Icons.play_arrow_rounded),
+                                  const Icon(Icons.skip_next_rounded),
+                                ],
                               ),
                             ),
                             const Spacer(
@@ -218,23 +215,17 @@ class _PlayerGradientSelectionState extends State<PlayerGradientSelection> {
                             ),
                           ],
                         ),
-                        if (gradientType == type)
-                          const Center(child: Icon(Icons.check_rounded)),
                         if (recommended.contains(type))
                           const Align(
                             alignment: Alignment.topRight,
                             child: Padding(
                               padding: EdgeInsets.all(10.0),
-                              child: Icon(Icons.star_rounded),
+                              child: Icon(
+                                Icons.star_border_rounded,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0),
-                            child: Text(typeMapping[type]!),
-                          ),
-                        ),
                       ],
                     ),
                   ),

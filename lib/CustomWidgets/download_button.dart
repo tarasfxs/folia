@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'package:blackhole/APIs/api.dart';
@@ -49,8 +49,23 @@ class _DownloadButtonState extends State<DownloadButton> {
     super.initState();
     down = Download(widget.data['id'].toString());
     down.addListener(() {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    showStopButton.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Set _mounted to true when the widget is added to the tree
+    // _mounted = true;
   }
 
   @override
@@ -138,7 +153,7 @@ class _DownloadButtonState extends State<DownloadButton> {
                               );
                             },
                           ),
-                        )
+                        ),
                       ],
                     ),
                     onTap: () {

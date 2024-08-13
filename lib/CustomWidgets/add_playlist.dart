@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'package:audio_service/audio_service.dart';
@@ -67,7 +67,7 @@ class AddToOffPlaylist {
                       context: context,
                       keyboardType: TextInputType.text,
                       title: AppLocalizations.of(context)!.createNewPlaylist,
-                      onSubmitted: (String value) async {
+                      onSubmitted: (String value, BuildContext context) async {
                         await offlineAudioQuery.createPlaylist(name: value);
                         playlistDetails =
                             await offlineAudioQuery.getPlaylists();
@@ -177,7 +177,7 @@ class AddToPlaylist {
                       context: context,
                       keyboardType: TextInputType.name,
                       title: AppLocalizations.of(context)!.createNewPlaylist,
-                      onSubmitted: (String value) async {
+                      onSubmitted: (String value, BuildContext context) async {
                         final RegExp avoid = RegExp(r'[\.\\\*\:\"\?#/;\|]');
                         value.replaceAll(avoid, '').replaceAll('  ', ' ');
                         if (value.trim() == '') {

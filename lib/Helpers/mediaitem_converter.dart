@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'package:audio_service/audio_service.dart';
-import 'package:blackhole/Helpers/image_resolution_modifier.dart';
-import 'package:blackhole/Helpers/song_item.dart';
+import 'package:blackhole/Models/song_item.dart';
+import 'package:blackhole/Models/url_image_generator.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 // ignore: avoid_classes_with_only_static_members
@@ -39,8 +39,7 @@ class MediaItemConverter {
       'subtitle': mediaItem.extras?['subtitle'],
       'title': mediaItem.title,
       'url': mediaItem.extras!['url'].toString(),
-      'lowUrl': mediaItem.extras!['lowUrl']?.toString(),
-      'highUrl': mediaItem.extras!['highUrl']?.toString(),
+      'allUrls': mediaItem.extras!['allUrls'],
       'year': mediaItem.extras?['year'].toString(),
       '320kbps': mediaItem.extras?['320kbps'],
       'quality': mediaItem.extras?['quality'],
@@ -70,13 +69,12 @@ class MediaItemConverter {
       ),
       title: song['title'].toString(),
       artUri: Uri.parse(
-        getImageUrl(song['image'].toString()),
+        UrlImageGetter([song['image'].toString()]).highQuality,
       ),
       genre: song['language'].toString(),
       extras: {
         'url': song['url'],
-        'lowUrl': song['lowUrl'],
-        'highUrl': song['highUrl'],
+        'allUrls': song['allUrls'],
         'year': song['year'],
         'language': song['language'],
         '320kbps': song['320kbps'],
@@ -136,12 +134,12 @@ class MediaItemConverter {
       duration: songItem.duration,
       title: songItem.title,
       artUri: Uri.parse(
-        getImageUrl(songItem.image),
+        UrlImageGetter([songItem.image]).highQuality,
       ),
       genre: songItem.genre,
       extras: {
         'url': songItem.url,
-        'allUrl': songItem.allUrls,
+        'allUrls': songItem.allUrls,
         'year': songItem.year,
         'language': songItem.language,
         '320kbps': songItem.kbps320,

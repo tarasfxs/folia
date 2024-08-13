@@ -1,3 +1,22 @@
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
+
 import 'package:blackhole/CustomWidgets/box_switch_tile.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
@@ -31,12 +50,14 @@ class _AppUIPageState extends State<AppUIPage> {
     'preferredCompactNotificationButtons',
     defaultValue: [1, 2, 3],
   ) as List<int>;
-  final ValueNotifier<List> sectionsToShow = ValueNotifier<List>(
-    Hive.box('settings').get(
-      'sectionsToShow',
-      defaultValue: ['Home', 'Top Charts', 'YouTube', 'Library'],
-    ) as List,
-  );
+  List sectionsToShow = Hive.box('settings').get(
+    'sectionsToShow',
+    defaultValue: ['Home', 'Top Charts', 'YouTube', 'Library'],
+  ) as List;
+  final List sectionsAvailableToShow = Hive.box('settings').get(
+    'sectionsAvailableToShow',
+    defaultValue: ['Top Charts', 'YouTube', 'Library', 'Settings'],
+  ) as List;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +129,7 @@ class _AppUIPageState extends State<AppUIPage> {
             //   defaultValue: true,
             //   isThreeLine: true,
             // ),
+
             BoxSwitchTile(
               title: Text(
                 AppLocalizations.of(
@@ -116,14 +138,15 @@ class _AppUIPageState extends State<AppUIPage> {
                     .useDenseMini,
               ),
               subtitle: Text(
-                AppLocalizations.of(
+                '${AppLocalizations.of(
                   context,
-                )!
-                    .useDenseMiniSub,
+                )!.useDenseMiniSub} (${AppLocalizations.of(
+                  context,
+                )!.restartRequired})',
               ),
               keyName: 'useDenseMini',
               defaultValue: false,
-              isThreeLine: false,
+              isThreeLine: true,
             ),
             ListTile(
               title: Text(
@@ -321,7 +344,7 @@ class _AppUIPageState extends State<AppUIPage> {
                   context: context,
                   builder: (BuildContext context) {
                     final Set<int> checked = {
-                      ...preferredCompactNotificationButtons
+                      ...preferredCompactNotificationButtons,
                     };
                     final List<Map> buttons = [
                       {
@@ -419,7 +442,7 @@ class _AppUIPageState extends State<AppUIPage> {
                                       );
                                     },
                                   );
-                                })
+                                }),
                               ],
                             ),
                           ),
@@ -542,7 +565,8 @@ class _AppUIPageState extends State<AppUIPage> {
                                       )!
                                           .enterText,
                                       keyboardType: TextInputType.text,
-                                      onSubmitted: (String value) {
+                                      onSubmitted:
+                                          (String value, BuildContext context) {
                                         Navigator.pop(context);
                                         blacklistedHomeSections.add(
                                           value.trim().toLowerCase(),
@@ -610,9 +634,6 @@ class _AppUIPageState extends State<AppUIPage> {
               ),
               keyName: 'showPlaylist',
               defaultValue: true,
-              onChanged: ({required bool val, required Box box}) {
-                widget.callback!();
-              },
             ),
 
             BoxSwitchTile(
@@ -630,9 +651,6 @@ class _AppUIPageState extends State<AppUIPage> {
               ),
               keyName: 'showRecent',
               defaultValue: true,
-              onChanged: ({required bool val, required Box box}) {
-                widget.callback!();
-              },
             ),
             // BoxSwitchTile(
             //   title: Text(
@@ -650,50 +668,223 @@ class _AppUIPageState extends State<AppUIPage> {
             //   keyName: 'showHistory',
             //   defaultValue: true,
             // ),
-            ValueListenableBuilder(
-              valueListenable: sectionsToShow,
-              builder: (
-                BuildContext context,
-                List items,
-                Widget? child,
-              ) {
-                return SwitchListTile(
-                  activeColor: Theme.of(context).colorScheme.secondary,
-                  title: Text(
-                    AppLocalizations.of(
-                      context,
-                    )!
-                        .showTopCharts,
-                  ),
-                  subtitle: Text(
-                    AppLocalizations.of(
-                      context,
-                    )!
-                        .showTopChartsSub,
-                  ),
-                  dense: true,
-                  value: items.contains('Top Charts'),
-                  onChanged: (val) {
-                    if (val) {
-                      sectionsToShow.value = [
-                        'Home',
-                        'Top Charts',
-                        'YouTube',
-                        'Library'
-                      ];
-                    } else {
-                      sectionsToShow.value = [
-                        'Home',
-                        'YouTube',
-                        'Library',
-                        'Settings'
-                      ];
-                    }
-                    settingsBox.put(
-                      'sectionsToShow',
-                      sectionsToShow.value,
+            ListTile(
+              title: Text(
+                AppLocalizations.of(
+                  context,
+                )!
+                    .navTabs,
+              ),
+              subtitle: Text(
+                AppLocalizations.of(
+                  context,
+                )!
+                    .navTabsSub,
+              ),
+              dense: true,
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    final List checked = List.from(sectionsToShow);
+                    sectionsAvailableToShow.removeWhere(
+                      (element) => element == 'Home',
                     );
-                    widget.callback!();
+                    return StatefulBuilder(
+                      builder: (
+                        BuildContext context,
+                        StateSetter setStt,
+                      ) {
+                        const Set persist = {'Home', 'Library'};
+                        return AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              15.0,
+                            ),
+                          ),
+                          content: SizedBox(
+                            width: 500,
+                            child: ReorderableListView(
+                              physics: const BouncingScrollPhysics(),
+                              shrinkWrap: true,
+                              padding: const EdgeInsets.fromLTRB(
+                                0,
+                                10,
+                                0,
+                                10,
+                              ),
+                              onReorder: (int oldIndex, int newIndex) {
+                                if (oldIndex < newIndex) {
+                                  newIndex--;
+                                }
+                                final temp = sectionsAvailableToShow.removeAt(
+                                  oldIndex,
+                                );
+                                sectionsAvailableToShow.insert(newIndex, temp);
+                                setStt(
+                                  () {},
+                                );
+                              },
+                              header: Column(
+                                children: [
+                                  Center(
+                                    child: Text(
+                                      '${AppLocalizations.of(
+                                        context,
+                                      )!.navTabs}\n(${AppLocalizations.of(
+                                        context,
+                                      )!.minFourRequired})',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  CheckboxListTile(
+                                    dense: true,
+                                    contentPadding: const EdgeInsets.only(
+                                      left: 16.0,
+                                    ),
+                                    activeColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    checkColor: Theme.of(
+                                              context,
+                                            ).colorScheme.secondary ==
+                                            Colors.white
+                                        ? Colors.black
+                                        : null,
+                                    value: true,
+                                    title: const Text('Home'),
+                                    onChanged: null,
+                                  ),
+                                ],
+                              ),
+                              children: sectionsAvailableToShow.map((e) {
+                                return Row(
+                                  key: Key(e.toString()),
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ReorderableDragStartListener(
+                                      index: sectionsAvailableToShow.indexOf(e),
+                                      child: const Icon(
+                                        Icons.drag_handle_rounded,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: SizedBox(
+                                        child: CheckboxListTile(
+                                          dense: true,
+                                          contentPadding: const EdgeInsets.only(
+                                            left: 16.0,
+                                          ),
+                                          activeColor: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                          checkColor: Theme.of(
+                                                    context,
+                                                  ).colorScheme.secondary ==
+                                                  Colors.white
+                                              ? Colors.black
+                                              : null,
+                                          value: checked.contains(e),
+                                          title: Text(e.toString()),
+                                          onChanged: persist.contains(e)
+                                              ? null
+                                              : (bool? value) {
+                                                  setStt(
+                                                    () {
+                                                      if (value!) {
+                                                        while (checked.length >=
+                                                            5) {
+                                                          checked.remove(
+                                                            checked.last,
+                                                          );
+                                                        }
+
+                                                        checked.add(e);
+                                                      } else {
+                                                        checked.remove(e);
+                                                      }
+                                                    },
+                                                  );
+                                                },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey[700],
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!
+                                    .cancel,
+                              ),
+                            ),
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor:
+                                    Theme.of(context).colorScheme.secondary ==
+                                            Colors.white
+                                        ? Colors.black
+                                        : null,
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.secondary,
+                              ),
+                              onPressed: () {
+                                final List newSectionsToShow = ['Home'];
+                                int remaining = 4 - checked.length;
+                                for (int i = 0;
+                                    i < sectionsAvailableToShow.length;
+                                    i++) {
+                                  if (checked
+                                      .contains(sectionsAvailableToShow[i])) {
+                                    newSectionsToShow
+                                        .add(sectionsAvailableToShow[i]);
+                                  } else {
+                                    if (remaining > 0) {
+                                      newSectionsToShow
+                                          .add(sectionsAvailableToShow[i]);
+                                      remaining--;
+                                    }
+                                  }
+                                }
+                                sectionsToShow = newSectionsToShow;
+                                Navigator.pop(context);
+                                Hive.box('settings').put(
+                                  'sectionsToShow',
+                                  sectionsToShow,
+                                );
+                                Hive.box('settings').put(
+                                  'sectionsAvailableToShow',
+                                  sectionsAvailableToShow,
+                                );
+                                widget.callback!();
+                              },
+                              child: Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!
+                                    .ok,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                 );
               },
@@ -713,6 +904,40 @@ class _AppUIPageState extends State<AppUIPage> {
               ),
               keyName: 'enableGesture',
               defaultValue: true,
+              isThreeLine: true,
+            ),
+            BoxSwitchTile(
+              title: Text(
+                AppLocalizations.of(
+                  context,
+                )!
+                    .volumeGestureEnabled,
+              ),
+              subtitle: Text(
+                AppLocalizations.of(
+                  context,
+                )!
+                    .volumeGestureEnabledSub,
+              ),
+              keyName: 'volumeGestureEnabled',
+              defaultValue: false,
+              isThreeLine: true,
+            ),
+            BoxSwitchTile(
+              title: Text(
+                AppLocalizations.of(
+                  context,
+                )!
+                    .useLessDataImage,
+              ),
+              subtitle: Text(
+                AppLocalizations.of(
+                  context,
+                )!
+                    .useLessDataImageSub,
+              ),
+              keyName: 'enableImageOptimization',
+              defaultValue: false,
               isThreeLine: true,
             ),
           ],

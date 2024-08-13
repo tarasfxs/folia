@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'dart:async';
@@ -34,7 +34,7 @@ class SpotifyApi {
   /// You can signup for spotify developer account and get your own clientID and clientSecret incase you don't want to use these
   final String clientID = '08de4eaf71904d1b95254fab3015d711';
   final String clientSecret = '622b4fbad33947c59b95a6ae607de11d';
-  final String redirectUrl = 'app://blackhole/auth';
+  final String redirectUrl = 'blackhole://spotify/auth';
   final String spotifyApiUrl = 'https://accounts.spotify.com/api';
   final String spotifyApiBaseUrl = 'https://api.spotify.com/v1';
   final String spotifyUserPlaylistEndpoint = '/me/playlists';
@@ -43,6 +43,8 @@ class SpotifyApi {
   final String spotifyFeaturedPlaylistsEndpoint = '/browse/featured-playlists';
   final String spotifyBaseUrl = 'https://accounts.spotify.com';
   final String requestToken = 'https://accounts.spotify.com/api/token';
+  final String playerAccessToken =
+      'https://open.spotify.com/get_access_token?reason=transport&productType=web_player';
 
   String requestAuthorization() =>
       'https://accounts.spotify.com/authorize?client_id=$clientID&response_type=code&redirect_uri=$redirectUrl&scope=${_scopes.join('%20')}';
@@ -77,7 +79,7 @@ class SpotifyApi {
       body = {
         'grant_type': 'authorization_code',
         'code': code,
-        'redirect_uri': redirectUrl
+        'redirect_uri': redirectUrl,
       };
     } else if (refreshToken != null) {
       body = {
@@ -113,6 +115,34 @@ class SpotifyApi {
     return [];
   }
 
+  Future<Map> getPlayerAccessToken() async {
+    try {
+      final Uri path = Uri.parse(playerAccessToken);
+      final response = await get(
+        path,
+        headers: {
+          'User-Agent':
+              'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.0.0 Safari/537.36',
+          'Accept': 'application/json',
+          'App-platform': 'WebPlayer',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final Map result = jsonDecode(response.body) as Map;
+        return result;
+      } else {
+        Logger.root.severe(
+          'Error in getPlayerAccessToken, called: $path, returned: ${response.statusCode}',
+          response.body,
+        );
+      }
+    } catch (e) {
+      Logger.root.severe('Error in getting spotify player access token: $e');
+    }
+    return {};
+  }
+
   Future<List> getUserPlaylists(String accessToken) async {
     try {
       final Uri path =
@@ -122,7 +152,7 @@ class SpotifyApi {
         path,
         headers: {
           'Authorization': 'Bearer $accessToken',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
         },
       );
       if (response.statusCode == 200) {
@@ -153,6 +183,9 @@ class SpotifyApi {
       playlistId,
       0,
     );
+    if (data['tracks'] == null) {
+      return [];
+    }
     totalTracks = data['total'] as int;
     tracks.addAll(data['tracks'] as List);
 
@@ -163,7 +196,9 @@ class SpotifyApi {
           playlistId,
           i * 100,
         );
-        tracks.addAll(data['tracks'] as List);
+        if (data['tracks'] != null) {
+          tracks.addAll(data['tracks'] as List);
+        }
       }
     }
     return tracks;
@@ -182,7 +217,7 @@ class SpotifyApi {
         path,
         headers: {
           'Authorization': 'Bearer $accessToken',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
         },
       );
 
@@ -196,11 +231,15 @@ class SpotifyApi {
           'Error in getHundredTracksOfPlaylist, called: $path, returned: ${response.statusCode}',
           response.body,
         );
+        final jsonRes = jsonDecode(response.body);
+        final errorMsg =
+            jsonRes['error']['message'] ??= 'Error in getting tracks';
+        return {'error': errorMsg};
       }
     } catch (e) {
       Logger.root.severe('Error in getting spotify playlist tracks: $e');
+      return {'error': e.toString()};
     }
-    return {};
   }
 
   Future<Map> searchTrack({
@@ -217,7 +256,7 @@ class SpotifyApi {
       path,
       headers: {
         'Authorization': 'Bearer $accessToken',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
       },
     );
 
@@ -241,7 +280,7 @@ class SpotifyApi {
       path,
       headers: {
         'Authorization': 'Bearer $accessToken',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
       },
     );
 
@@ -266,7 +305,7 @@ class SpotifyApi {
         path,
         headers: {
           'Authorization': 'Bearer $accessToken',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
         },
       );
       final List<Map> songsData = [];

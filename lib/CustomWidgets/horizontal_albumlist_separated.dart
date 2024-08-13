@@ -14,13 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
+import 'package:blackhole/CustomWidgets/image_card.dart';
 import 'package:blackhole/CustomWidgets/song_tile_trailing_menu.dart';
-import 'package:blackhole/Helpers/image_resolution_modifier.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class HorizontalAlbumsListSeparated extends StatelessWidget {
@@ -70,14 +69,14 @@ class HorizontalAlbumsListSeparated extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool rotated =
-        MediaQuery.of(context).size.height < MediaQuery.of(context).size.width;
-    final bool biggerScreen = MediaQuery.of(context).size.width > 1050;
+        MediaQuery.sizeOf(context).height < MediaQuery.sizeOf(context).width;
+    final bool biggerScreen = MediaQuery.sizeOf(context).width > 1050;
     final double portion = (songsList.length <= 4) ? 1.0 : 0.875;
     final double listSize = rotated
         ? biggerScreen
-            ? MediaQuery.of(context).size.width * portion / 3
-            : MediaQuery.of(context).size.width * portion / 2
-        : MediaQuery.of(context).size.width * portion;
+            ? MediaQuery.sizeOf(context).width * portion / 3
+            : MediaQuery.sizeOf(context).width * portion / 2
+        : MediaQuery.sizeOf(context).width * portion;
     return SizedBox(
       height: songsList.length < 4 ? songsList.length * 74 : 74 * 4,
       child: Align(
@@ -106,39 +105,20 @@ class HorizontalAlbumsListSeparated extends StatelessWidget {
                       subTitle,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    leading: Card(
-                      margin: EdgeInsets.zero,
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7.0),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: SizedBox.square(
-                        dimension: 55.0,
-                        child: CachedNetworkImage(
-                          fit: BoxFit.cover,
-                          errorWidget: (context, _, __) => const Image(
-                            fit: BoxFit.cover,
-                            image: AssetImage('assets/cover.jpg'),
-                          ),
-                          imageUrl: getImageUrl(item['image'].toString()),
-                          placeholder: (context, url) => Image(
-                            fit: BoxFit.cover,
-                            image: (item['type'] == 'playlist' ||
-                                    item['type'] == 'album')
-                                ? const AssetImage(
-                                    'assets/album.png',
-                                  )
-                                : item['type'] == 'artist'
-                                    ? const AssetImage(
-                                        'assets/artist.png',
-                                      )
-                                    : const AssetImage(
-                                        'assets/cover.jpg',
-                                      ),
-                          ),
-                        ),
-                      ),
+                    leading: imageCard(
+                      imageUrl: item['image'].toString(),
+                      placeholderImage: (item['type'] == 'playlist' ||
+                              item['type'] == 'album')
+                          ? const AssetImage(
+                              'assets/album.png',
+                            )
+                          : item['type'] == 'artist'
+                              ? const AssetImage(
+                                  'assets/artist.png',
+                                )
+                              : const AssetImage(
+                                  'assets/cover.jpg',
+                                ),
                     ),
                     trailing: SongTileTrailingMenu(
                       data: item,

@@ -1,3 +1,23 @@
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
+
+import 'package:blackhole/CustomWidgets/drawer.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/Screens/Settings/about.dart';
 import 'package:blackhole/Screens/Settings/app_ui.dart';
@@ -24,23 +44,20 @@ class _NewSettingsPageState extends State<NewSettingsPage>
     with AutomaticKeepAliveClientMixin<NewSettingsPage> {
   final TextEditingController controller = TextEditingController();
   final ValueNotifier<String> searchQuery = ValueNotifier<String>('');
-  final ValueNotifier<List> sectionsToShow = ValueNotifier<List>(
-    Hive.box('settings').get(
-      'sectionsToShow',
-      defaultValue: ['Home', 'Top Charts', 'YouTube', 'Library'],
-    ) as List,
-  );
+  final List sectionsToShow = Hive.box('settings').get(
+    'sectionsToShow',
+    defaultValue: ['Home', 'Top Charts', 'YouTube', 'Library'],
+  ) as List;
 
   @override
   void dispose() {
     controller.dispose();
     searchQuery.dispose();
-    sectionsToShow.dispose();
     super.dispose();
   }
 
   @override
-  bool get wantKeepAlive => sectionsToShow.value.contains('Settings');
+  bool get wantKeepAlive => sectionsToShow.contains('Settings');
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +70,12 @@ class _NewSettingsPageState extends State<NewSettingsPage>
           elevation: 0,
           backgroundColor: Colors.transparent,
           centerTitle: true,
+          leading: sectionsToShow.contains('Settings')
+              ? homeDrawer(
+                  context: context,
+                  padding: const EdgeInsets.only(left: 15.0),
+                )
+              : null,
           title: Text(
             AppLocalizations.of(context)!.settings,
             style: TextStyle(
@@ -81,7 +104,6 @@ class _NewSettingsPageState extends State<NewSettingsPage>
           10.0,
         ),
       ),
-      color: Theme.of(context).scaffoldBackgroundColor,
       elevation: 2.0,
       child: SizedBox(
         height: 55.0,
@@ -150,7 +172,7 @@ class _NewSettingsPageState extends State<NewSettingsPage>
           AppLocalizations.of(context)!.useAmoled,
           AppLocalizations.of(context)!.currentTheme,
           AppLocalizations.of(context)!.saveTheme,
-        ]
+        ],
       },
       {
         'title': AppLocalizations.of(
@@ -171,9 +193,11 @@ class _NewSettingsPageState extends State<NewSettingsPage>
           AppLocalizations.of(context)!.compactNotificationButtons,
           AppLocalizations.of(context)!.showPlaylists,
           AppLocalizations.of(context)!.showLast,
-          AppLocalizations.of(context)!.showTopCharts,
+          AppLocalizations.of(context)!.navTabs,
           AppLocalizations.of(context)!.enableGesture,
-        ]
+          AppLocalizations.of(context)!.volumeGestureEnabled,
+          AppLocalizations.of(context)!.useLessDataImage,
+        ],
       },
       {
         'title': AppLocalizations.of(
@@ -196,7 +220,7 @@ class _NewSettingsPageState extends State<NewSettingsPage>
           AppLocalizations.of(context)!.enforceRepeat,
           AppLocalizations.of(context)!.autoplay,
           AppLocalizations.of(context)!.cacheSong,
-        ]
+        ],
       },
       {
         'title': AppLocalizations.of(
@@ -214,7 +238,7 @@ class _NewSettingsPageState extends State<NewSettingsPage>
           AppLocalizations.of(context)!.createAlbumFold,
           AppLocalizations.of(context)!.createYtFold,
           AppLocalizations.of(context)!.downLyrics,
-        ]
+        ],
       },
       {
         'title': AppLocalizations.of(
@@ -238,7 +262,7 @@ class _NewSettingsPageState extends State<NewSettingsPage>
           AppLocalizations.of(context)!.proxySet,
           AppLocalizations.of(context)!.clearCache,
           AppLocalizations.of(context)!.shareLogs,
-        ]
+        ],
       },
       {
         'title': AppLocalizations.of(
@@ -253,7 +277,7 @@ class _NewSettingsPageState extends State<NewSettingsPage>
           AppLocalizations.of(context)!.restore,
           AppLocalizations.of(context)!.autoBack,
           AppLocalizations.of(context)!.autoBackLocation,
-        ]
+        ],
       },
       {
         'title': AppLocalizations.of(
@@ -271,7 +295,7 @@ class _NewSettingsPageState extends State<NewSettingsPage>
           AppLocalizations.of(context)!.donateGpay,
           AppLocalizations.of(context)!.joinTg,
           AppLocalizations.of(context)!.moreInfo,
-        ]
+        ],
       },
     ];
 
@@ -283,7 +307,7 @@ class _NewSettingsPageState extends State<NewSettingsPage>
     }
 
     final bool isRotated =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+        MediaQuery.orientationOf(context) == Orientation.landscape;
 
     return Stack(
       children: [
@@ -296,7 +320,10 @@ class _NewSettingsPageState extends State<NewSettingsPage>
           itemCount: settingsList.length,
           itemBuilder: (context, index) {
             return ListTile(
-              leading: Icon(settingsList[index]['icon'] as IconData),
+              leading: SizedBox.square(
+                dimension: 40,
+                child: Icon(settingsList[index]['icon'] as IconData),
+              ),
               title: Text(settingsList[index]['title'].toString()),
               subtitle: Text(
                 (settingsList[index]['items'] as List).take(3).join(', '),

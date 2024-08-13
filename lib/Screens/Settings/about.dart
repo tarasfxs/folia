@@ -1,3 +1,24 @@
+/*
+ *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ * 
+ * BlackHole is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlackHole is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * Copyright (c) 2021-2023, Ankit Sangwan
+ */
+
+import 'dart:io';
+
 import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
@@ -103,18 +124,6 @@ class _AboutPageState extends State<AboutPage> {
                                 latestVersion,
                                 appVersion!,
                               )) {
-                                List? abis = await Hive.box('settings')
-                                    .get('supportedAbis') as List?;
-
-                                if (abis == null) {
-                                  final DeviceInfoPlugin deviceInfo =
-                                      DeviceInfoPlugin();
-                                  final AndroidDeviceInfo androidDeviceInfo =
-                                      await deviceInfo.androidInfo;
-                                  abis = androidDeviceInfo.supportedAbis;
-                                  await Hive.box('settings')
-                                      .put('supportedAbis', abis);
-                                }
                                 ShowSnackBar().showSnackBar(
                                   context,
                                   AppLocalizations.of(context)!.updateAvailable,
@@ -123,11 +132,33 @@ class _AboutPageState extends State<AboutPage> {
                                     textColor:
                                         Theme.of(context).colorScheme.secondary,
                                     label: AppLocalizations.of(context)!.update,
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      String arch = '';
+                                      if (Platform.isAndroid) {
+                                        List? abis = await Hive.box('settings')
+                                            .get('supportedAbis') as List?;
+
+                                        if (abis == null) {
+                                          final DeviceInfoPlugin deviceInfo =
+                                              DeviceInfoPlugin();
+                                          final AndroidDeviceInfo
+                                              androidDeviceInfo =
+                                              await deviceInfo.androidInfo;
+                                          abis =
+                                              androidDeviceInfo.supportedAbis;
+                                          await Hive.box('settings')
+                                              .put('supportedAbis', abis);
+                                        }
+                                        if (abis.contains('arm64')) {
+                                          arch = 'arm64';
+                                        } else if (abis.contains('armeabi')) {
+                                          arch = 'armeabi';
+                                        }
+                                      }
                                       Navigator.pop(context);
                                       launchUrl(
                                         Uri.parse(
-                                          'https://sangwan5688.github.io/download/',
+                                          'https://sangwan5688.github.io/download?platform=${Platform.operatingSystem}&arch=$arch',
                                         ),
                                         mode: LaunchMode.externalApplication,
                                       );

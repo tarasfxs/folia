@@ -14,19 +14,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'package:app_links/app_links.dart';
 import 'package:blackhole/APIs/spotify_api.dart';
 import 'package:blackhole/CustomWidgets/custom_physics.dart';
+import 'package:blackhole/CustomWidgets/drawer.dart';
 import 'package:blackhole/CustomWidgets/empty_screen.dart';
-import 'package:blackhole/Helpers/countrycodes.dart';
+import 'package:blackhole/CustomWidgets/image_card.dart';
+import 'package:blackhole/Helpers/spotify_country.dart';
 import 'package:blackhole/Helpers/spotify_helper.dart';
 // import 'package:blackhole/Helpers/countrycodes.dart';
 import 'package:blackhole/Screens/Search/search.dart';
-import 'package:blackhole/Screens/Settings/setting.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:blackhole/constants/countrycodes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -57,8 +58,8 @@ class _TopChartsState extends State<TopCharts>
   @override
   Widget build(BuildContext cntxt) {
     super.build(context);
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final bool rotated = MediaQuery.of(context).size.height < screenWidth;
+    final double screenWidth = MediaQuery.sizeOf(context).width;
+    final bool rotated = MediaQuery.sizeOf(context).height < screenWidth;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -107,26 +108,7 @@ class _TopChartsState extends State<TopCharts>
           backgroundColor: Colors.transparent,
           elevation: 0,
           automaticallyImplyLeading: false,
-          leading: rotated
-              ? null
-              : Builder(
-                  builder: (BuildContext context) {
-                    return Transform.rotate(
-                      angle: 22 / 7 * 2,
-                      child: IconButton(
-                        color: Theme.of(context).iconTheme.color,
-                        icon: const Icon(
-                          Icons.horizontal_split_rounded,
-                        ),
-                        onPressed: () {
-                          Scaffold.of(cntxt).openDrawer();
-                        },
-                        tooltip: MaterialLocalizations.of(cntxt)
-                            .openAppDrawerTooltip,
-                      ),
-                    );
-                  },
-                ),
+          leading: rotated ? null : homeDrawer(context: context),
         ),
         body: NotificationListener(
           onNotification: (overscroll) {
@@ -163,10 +145,10 @@ class _TopChartsState extends State<TopCharts>
 }
 
 Future<List> getChartDetails(String accessToken, String type) async {
-  final String globalPlaylistId = ConstantCodes.localChartCodes['Global']!;
-  final String localPlaylistId = ConstantCodes.localChartCodes.containsKey(type)
-      ? ConstantCodes.localChartCodes[type]!
-      : ConstantCodes.localChartCodes['India']!;
+  final String globalPlaylistId = CountryCodes.localChartCodes['Global']!;
+  final String localPlaylistId = CountryCodes.localChartCodes.containsKey(type)
+      ? CountryCodes.localChartCodes[type]!
+      : CountryCodes.localChartCodes['India']!;
   final String playlistId =
       type == 'Global' ? globalPlaylistId : localPlaylistId;
   final List data = [];
@@ -314,6 +296,10 @@ class _TopPageState extends State<TopPage>
                     onPressed: () {
                       scrapData(widget.type, signIn: true);
                     },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      foregroundColor: Colors.black,
+                    ),
                     child: Text(AppLocalizations.of(context)!.signInSpotify),
                   ),
                 ),
@@ -346,34 +332,8 @@ class _TopPageState extends State<TopPage>
                   itemExtent: 70.0,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      leading: Card(
-                        margin: EdgeInsets.zero,
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(7.0),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: Stack(
-                          children: [
-                            const Image(
-                              image: AssetImage('assets/cover.jpg'),
-                            ),
-                            if (showList[index]['image_url_small'] != '')
-                              CachedNetworkImage(
-                                fit: BoxFit.cover,
-                                imageUrl: showList[index]['image_url_small']
-                                    .toString(),
-                                errorWidget: (context, _, __) => const Image(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/cover.jpg'),
-                                ),
-                                placeholder: (context, url) => const Image(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/cover.jpg'),
-                                ),
-                              ),
-                          ],
-                        ),
+                      leading: imageCard(
+                        imageUrl: showList[index]['image_url_small'].toString(),
                       ),
                       title: Text(
                         '${index + 1}. ${showList[index]["name"]}',
@@ -420,7 +380,9 @@ class _TopPageState extends State<TopPage>
                           context,
                           MaterialPageRoute(
                             builder: (context) => SearchPage(
-                              query: showList[index]['name'].toString(),
+                              query:
+                                  '${showList[index]["name"]} - ${showList[index]["artist"]}',
+                              fromDirectSearch: true,
                             ),
                           ),
                         );

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlackHole.  If not, see <http://www.gnu.org/licenses/>.
  * 
- * Copyright (c) 2021-2022, Ankit Sangwan
+ * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
 import 'package:blackhole/CustomWidgets/snackbar.dart';
@@ -65,12 +65,12 @@ class _LocalPlaylistsState extends State<LocalPlaylists> {
               ),
             ),
             onTap: () async {
-              await showTextInputDialog(
+              showTextInputDialog(
                 context: context,
                 title: AppLocalizations.of(context)!.createNewPlaylist,
                 initialText: '',
                 keyboardType: TextInputType.name,
-                onSubmitted: (String value) async {
+                onSubmitted: (String value, BuildContext context) async {
                   if (value.trim() != '') {
                     Navigator.pop(context);
                     await widget.offlineAudioQuery.createPlaylist(
@@ -218,7 +218,7 @@ class _LocalPlaylistsState extends State<LocalPlaylists> {
                   },
                 );
               },
-            )
+            ),
         ],
       ),
     );
