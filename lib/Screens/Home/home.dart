@@ -598,7 +598,7 @@ class _HomePageState extends State<HomePage> {
                     (rotated ? 0 : 70) +
                     (useDense ? 0 : 10) +
                     (rotated && useDense ? 10 : 0),
-                //confineInSafeArea: false,
+                confineToSafeArea: false,
                 /* onItemTapped: onItemTapped,
                 routeAndNavigatorSettings:
                     CustomWidgetRouteAndNavigatorSettings(
@@ -613,8 +613,9 @@ class _HomePageState extends State<HomePage> {
                     return HandleRoute.handleRoute(settings.name);
                   },
                 ), */
+                backgroundColor: Colors.transparent,
                 customWidget: ColoredBox(
-                  color: Colors.black,
+                  color: Colors.transparent,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -634,8 +635,8 @@ class _HomePageState extends State<HomePage> {
                                 currentIndex: indexValue,
                                 backgroundColor: Theme.of(context).brightness ==
                                         Brightness.dark
-                                    ? Colors.black.withOpacity(0.9)
-                                    : Colors.white.withOpacity(0.9),
+                                    ? Colors.black.withOpacity(0.93)
+                                    : Colors.white.withOpacity(0.93),
                                 onTap: (index) {
                                   onItemTapped(index);
                                 },

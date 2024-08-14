@@ -17,10 +17,15 @@
  * Copyright (c) 2021-2023, Ankit Sangwan
  */
 
+import 'dart:io';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:blackhole/CustomWidgets/gradient_containers.dart';
 import 'package:blackhole/CustomWidgets/image_card.dart';
+import 'package:blackhole/Helpers/config.dart';
+import 'package:blackhole/Helpers/dominant_color.dart';
 import 'package:blackhole/Screens/Player/audioplayer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -40,6 +45,15 @@ class MiniPlayer extends StatefulWidget {
 
 class _MiniPlayerState extends State<MiniPlayer> {
   final AudioPlayerHandler audioHandler = GetIt.I<AudioPlayerHandler>();
+  final ValueNotifier<List<Color?>?> gradientColor =
+      ValueNotifier<List<Color?>?>(
+    GetIt.I<MyTheme>().playGradientColor,
+  );
+
+  void updateBackgroundColors(List<Color?> value) {
+    gradientColor.value = value;
+    return;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +85,24 @@ class _MiniPlayerState extends State<MiniPlayer> {
               ) as bool ||
               rotated;
 
+          if (mediaItem != null) {
+            if (mediaItem.artUri != null && mediaItem.artUri.toString() != '') {
+              mediaItem.artUri.toString().startsWith('file')
+                  ? getColors(
+                      imageProvider: FileImage(
+                        File(
+                          mediaItem.artUri!.toFilePath(),
+                        ),
+                      ),
+                    ).then((value) => updateBackgroundColors(value))
+                  : getColors(
+                      imageProvider: CachedNetworkImageProvider(
+                        mediaItem.artUri.toString(),
+                      ),
+                    ).then((value) => updateBackgroundColors(value));
+            }
+          }
+
           return Dismissible(
             key: const Key('miniplayer'),
             direction: DismissDirection.vertical,
@@ -96,15 +128,27 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 }
                 return Future.value(false);
               },
-              child: Card(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 2.0,
-                  vertical: 1.0,
-                ),
-                color: Colors.black,
-                elevation: 0,
-                child: SizedBox(
-                  child: GradientContainer(
+              // TODO: readd gradientcontainer when no mediaitem
+              child: ValueListenableBuilder(
+                valueListenable: gradientColor,
+                builder: (context, value, child) => Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(15),
+                    ),
+                    color: (value?[0]?.computeLuminance() ?? 0) > 0.4
+                        ? (value?[1]?.computeLuminance() ?? 0) > 0.5
+                            ? HSLColor.fromColor(value?[0] ?? Colors.black)
+                                .withLightness(0.5)
+                                .toColor()
+                            : (value?[1] ?? Colors.black)
+                        : value?[0] ?? Colors.black,
+                  ),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 1.0,
+                  ),
+                  child: SizedBox(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -121,8 +165,11 @@ class _MiniPlayerState extends State<MiniPlayer> {
                           isLocalImage: isLocal,
                           isDummy: mediaItem == null,
                         ),
-                        positionSlider(
-                          mediaItem?.duration?.inSeconds.toDouble(),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: positionSlider(
+                            mediaItem?.duration?.inSeconds.toDouble(),
+                          ),
                         ),
                       ],
                     ),
@@ -195,10 +242,10 @@ class _MiniPlayerState extends State<MiniPlayer> {
             ? const SizedBox()
             : SliderTheme(
                 data: SliderTheme.of(context).copyWith(
-                  activeTrackColor: Theme.of(context).colorScheme.secondary,
+                  activeTrackColor: Colors.white,
                   inactiveTrackColor: Colors.transparent,
                   trackHeight: 0.5,
-                  thumbColor: Theme.of(context).colorScheme.secondary,
+                  thumbColor: Colors.white,
                   thumbShape: const RoundSliderThumbShape(
                     enabledThumbRadius: 1.0,
                   ),
