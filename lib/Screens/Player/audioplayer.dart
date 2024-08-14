@@ -973,24 +973,22 @@ class NowPlayingStream extends StatelessWidget {
     int queuePosition,
     int queueLength,
   ) {
-    if (panelController != null && !panelController!.isPanelOpen) {
-      if (queuePosition > 3) {
-        controller?.animateTo(
-          itemIndex * 72 + 12,
-          curve: Curves.linear,
-          duration: const Duration(
-            milliseconds: 350,
-          ),
-        );
-      } else if (queuePosition < 4 && queueLength > 4) {
-        controller?.animateTo(
-          (queueLength - 4) * 72 + 12,
-          curve: Curves.linear,
-          duration: const Duration(
-            milliseconds: 350,
-          ),
-        );
-      }
+    if (queuePosition > 3) {
+      controller?.animateTo(
+        itemIndex * 72 + 12,
+        curve: Curves.linear,
+        duration: const Duration(
+          milliseconds: 350,
+        ),
+      );
+    } else if (queuePosition < 4 && queueLength > 4) {
+      controller?.animateTo(
+        (queueLength - 4) * 72 + 12,
+        curve: Curves.linear,
+        duration: const Duration(
+          milliseconds: 350,
+        ),
+      );
     }
     return;
   }
@@ -1007,7 +1005,7 @@ class NowPlayingStream extends StatelessWidget {
         WidgetsBinding.instance.addPostFrameCallback(
           (_) => _updateScrollController(
             scrollController,
-            queueState.queueIndex ?? 0,
+            queueStateIndex,
             queuePosition.toInt(),
             queue.length,
           ),
