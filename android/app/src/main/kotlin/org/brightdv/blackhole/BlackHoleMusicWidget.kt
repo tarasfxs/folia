@@ -1,4 +1,4 @@
-package com.shadow.blackhole
+package org.brightdv.blackhole
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider

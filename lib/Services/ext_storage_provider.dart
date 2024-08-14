@@ -51,8 +51,10 @@ class ExtStorageProvider {
           directory = await getExternalStorageDirectory();
 
           // getting main path
-          final String newPath = directory!.path
-              .replaceFirst('Android/data/com.shadow.blackhole/files', dirName);
+          final String newPath = directory!.path.replaceFirst(
+            'Android/data/org.brightdv.blackhole/files',
+            dirName,
+          );
 
           directory = Directory(newPath);
 

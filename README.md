@@ -1,6 +1,6 @@
 > [!WARNING] 
 > The original app and its code have been deleted. I will try to keep the codebase updated, fix important bugs and add some features.
-> Releases will be signed with my own signature, so a backup is needed to switch from the original app (I may change the package ID later).
+> Releases will be signed with my own signature, so a backup is needed to switch from the original app, but the app can be installed alongside the original.
 
 ![Repo Banner](https://user-images.githubusercontent.com/87353286/144381080-faf8e557-7909-43a1-a8e2-208936e5a8f8.png)
 
@@ -17,6 +17,9 @@ An Open-Source Music Player App for all your needs!
 [![GitHub stars](https://img.shields.io/github/stars/Sangwan5688/BlackHole.svg?style=social&label=Star)](https://github.com//Sangwan5688/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/Sangwan5688/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/Sangwan5688.svg?style=social&label=Follow)
 
 ## Download
+
+> [!NOTE] 
+> Coming soon...
 
 [<img src="get_website.png"
      alt="Download from Website"
