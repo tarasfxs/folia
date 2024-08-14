@@ -42,7 +42,7 @@ import 'package:blackhole/Screens/Search/albums.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_lyric/lyric_ui/lyric_ui.dart';
@@ -273,6 +273,7 @@ class _PlayScreenState extends State<PlayScreen> {
                           pageBuilder: (_, __, ___) => PlayerQueue(
                             panelController: _panelController,
                             audioHandler: audioHandler,
+                            gradientColor: gradientColor,
                           ),
                         ),
                       ),
@@ -2236,13 +2237,20 @@ class NameNControls extends StatelessWidget {
 class PlayerQueue extends StatelessWidget {
   final PanelController panelController;
   final AudioPlayerHandler audioHandler;
+  final ValueListenable<List<Color?>?> gradientColor;
   const PlayerQueue({
     required this.audioHandler,
     required this.panelController,
+    required this.gradientColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final String gradientType = Hive.box('settings')
+        .get('gradientType', defaultValue: 'halfDark')
+        .toString();
+    final MyTheme currentTheme = GetIt.I<MyTheme>();
+
     return Dismissible(
       direction: DismissDirection.down,
       background: const ColoredBox(color: Colors.transparent),
@@ -2252,7 +2260,7 @@ class PlayerQueue extends StatelessWidget {
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.black.withOpacity(0.8),
+        extendBodyBehindAppBar: true,
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.transparent,
@@ -2266,11 +2274,65 @@ class PlayerQueue extends StatelessWidget {
           ),
           title: Text(AppLocalizations.of(context)!.upNext),
         ),
-        body: NowPlayingStream(
-          head: true,
-          audioHandler: audioHandler,
-          scrollController: ScrollController(),
-          panelController: panelController,
+        body: ValueListenableBuilder(
+          valueListenable: gradientColor,
+          builder: (context, value, child) => AnimatedContainer(
+            duration: const Duration(milliseconds: 600),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: gradientType == 'simple'
+                    ? Alignment.topLeft
+                    : Alignment.topCenter,
+                end: gradientType == 'simple'
+                    ? Alignment.bottomRight
+                    : (gradientType == 'halfLight' ||
+                            gradientType == 'halfDark')
+                        ? Alignment.center
+                        : Alignment.bottomCenter,
+                colors: gradientType == 'simple'
+                    ? Theme.of(context).brightness == Brightness.dark
+                        ? currentTheme.getBackGradient()
+                        : [
+                            const Color(0xfff5f9ff),
+                            Colors.white,
+                          ]
+                    : Theme.of(context).brightness == Brightness.dark
+                        ? [
+                            // Top part
+                            if (gradientType == 'halfDark' ||
+                                gradientType == 'fullDark' ||
+                                gradientType == 'fullDarkOnly')
+                              value?[1] ?? Colors.grey[900]!
+                            else
+                              value?[0] ?? Colors.grey[900]!,
+                            // Bottom part
+                            if (gradientType == 'fullMix' ||
+                                gradientType == 'fullMixDarker' ||
+                                gradientType == 'fullMixBlack' ||
+                                gradientType == 'fullDarkOnly')
+                              value?[1] ?? Colors.black
+                            else
+                              Colors.black,
+                            // Extra bottom part incase of full darker and black
+                            if (gradientType == 'fullMixDarker')
+                              value?[1] ?? Colors.black,
+                            if (gradientType == 'fullMixBlack') Colors.black,
+                          ]
+                        : [
+                            value?[0] ?? const Color(0xfff5f9ff),
+                            Colors.white,
+                          ],
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 90),
+              child: NowPlayingStream(
+                audioHandler: audioHandler,
+                scrollController: ScrollController(),
+                panelController: panelController,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -2461,8 +2523,7 @@ class _LyricsProviderState extends State<LyricsProvider> {
                       },
                       blendMode: BlendMode.dstIn,
                       child: Center(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
+                        child: Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,
                           ),
@@ -2484,6 +2545,8 @@ class _LyricsProviderState extends State<LyricsProvider> {
                                       ? SizedBox(
                                           height: 355,
                                           child: SingleChildScrollView(
+                                            physics:
+                                                const BouncingScrollPhysics(),
                                             child: SelectableText(
                                               '\n' * 2 +
                                                   lyrics['lyrics'].toString() +
@@ -2545,7 +2608,9 @@ class _LyricsProviderState extends State<LyricsProvider> {
                                   .textTheme
                                   .bodySmall!
                                   .copyWith(
-                                      fontSize: 10.0, color: Colors.white70),
+                                    fontSize: 10.0,
+                                    color: Colors.white70,
+                                  ),
                             ),
                           );
                         },
