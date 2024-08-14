@@ -966,6 +966,34 @@ class NowPlayingStream extends StatelessWidget {
     this.headHeight = 50,
   });
 
+  void _updateScrollController(
+    ScrollController? controller,
+    int itemIndex,
+    int queuePosition,
+    int queueLength,
+  ) {
+    if (panelController != null && !panelController!.isPanelOpen) {
+      if (queuePosition > 3) {
+        controller?.animateTo(
+          itemIndex * 72 + 12,
+          curve: Curves.linear,
+          duration: const Duration(
+            milliseconds: 350,
+          ),
+        );
+      } else if (queuePosition < 4 && queueLength > 4) {
+        controller?.animateTo(
+          (queueLength - 4) * 72 + 12,
+          curve: Curves.linear,
+          duration: const Duration(
+            milliseconds: 350,
+          ),
+        );
+      }
+    }
+    return;
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QueueState>(
@@ -974,6 +1002,15 @@ class NowPlayingStream extends StatelessWidget {
         final queueState = snapshot.data ?? QueueState.empty;
         final queue = queueState.queue;
         final int queueStateIndex = queueState.queueIndex ?? 0;
+        final num queuePosition = queue.length - queueStateIndex;
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => _updateScrollController(
+            scrollController,
+            queueState.queueIndex ?? 0,
+            queuePosition.toInt(),
+            queue.length,
+          ),
+        );
 
         return ReorderableListView.builder(
           header: SizedBox(
@@ -983,36 +1020,33 @@ class NowPlayingStream extends StatelessWidget {
             if (oldIndex < newIndex) {
               newIndex--;
             }
-            audioHandler.moveQueueItem(
-              queueStateIndex + oldIndex,
-              queueStateIndex + newIndex,
-            );
+            audioHandler.moveQueueItem(oldIndex, newIndex);
           },
           scrollController: scrollController,
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.only(bottom: 10),
           shrinkWrap: true,
-          itemCount: queue.length - queueStateIndex,
+          itemCount: queue.length,
           itemBuilder: (context, index) {
             return Dismissible(
               key: ValueKey(
-                '${queue[queueStateIndex + index].id}#${queueStateIndex + index}',
+                '${queue[index].id}#$index',
               ),
-              direction: (queueStateIndex + index) == queueState.queueIndex
+              direction: index == queueState.queueIndex
                   ? DismissDirection.none
                   : DismissDirection.horizontal,
               onDismissed: (dir) {
-                audioHandler.removeQueueItemAt(queueStateIndex + index);
+                audioHandler.removeQueueItemAt(index);
               },
               child: ListTileTheme(
                 selectedColor: Theme.of(context).colorScheme.secondary,
                 child: ListTile(
                   contentPadding:
                       const EdgeInsets.only(left: 16.0, right: 10.0),
-                  selected: queueStateIndex + index == queueState.queueIndex,
+                  selected: index == queueState.queueIndex,
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: (queueStateIndex + index == queueState.queueIndex)
+                    children: (index == queueState.queueIndex)
                         ? [
                             IconButton(
                               icon: const Icon(
@@ -1023,66 +1057,51 @@ class NowPlayingStream extends StatelessWidget {
                             ),
                           ]
                         : [
-                            if (queue[queueStateIndex + index]
+                            if (queue[index]
                                 .extras!['url']
                                 .toString()
                                 .startsWith('http')) ...[
                               LikeButton(
-                                mediaItem: queue[queueStateIndex + index],
+                                mediaItem: queue[index],
                               ),
                               DownloadButton(
                                 icon: 'download',
                                 size: 25.0,
                                 data: {
-                                  'id': queue[queueStateIndex + index].id,
-                                  'artist': queue[queueStateIndex + index]
-                                      .artist
-                                      .toString(),
-                                  'album': queue[queueStateIndex + index]
-                                      .album
-                                      .toString(),
-                                  'image': queue[queueStateIndex + index]
-                                      .artUri
-                                      .toString(),
-                                  'duration': queue[queueStateIndex + index]
+                                  'id': queue[index].id,
+                                  'artist': queue[index].artist.toString(),
+                                  'album': queue[index].album.toString(),
+                                  'image': queue[index].artUri.toString(),
+                                  'duration': queue[index]
                                       .duration!
                                       .inSeconds
                                       .toString(),
-                                  'title': queue[queueStateIndex + index].title,
-                                  'url': queue[queueStateIndex + index]
-                                      .extras?['url']
-                                      .toString(),
-                                  'year': queue[queueStateIndex + index]
-                                      .extras?['year']
-                                      .toString(),
-                                  'language': queue[queueStateIndex + index]
+                                  'title': queue[index].title,
+                                  'url': queue[index].extras?['url'].toString(),
+                                  'year':
+                                      queue[index].extras?['year'].toString(),
+                                  'language': queue[index]
                                       .extras?['language']
                                       .toString(),
-                                  'genre': queue[queueStateIndex + index]
-                                      .genre
-                                      ?.toString(),
-                                  '320kbps': queue[queueStateIndex + index]
-                                      .extras?['320kbps'],
-                                  'has_lyrics': queue[queueStateIndex + index]
-                                      .extras?['has_lyrics'],
-                                  'release_date': queue[queueStateIndex + index]
-                                      .extras?['release_date'],
-                                  'album_id': queue[queueStateIndex + index]
-                                      .extras?['album_id'],
-                                  'subtitle': queue[queueStateIndex + index]
-                                      .extras?['subtitle'],
-                                  'perma_url': queue[queueStateIndex + index]
-                                      .extras?['perma_url'],
+                                  'genre': queue[index].genre?.toString(),
+                                  '320kbps': queue[index].extras?['320kbps'],
+                                  'has_lyrics':
+                                      queue[index].extras?['has_lyrics'],
+                                  'release_date':
+                                      queue[index].extras?['release_date'],
+                                  'album_id': queue[index].extras?['album_id'],
+                                  'subtitle': queue[index].extras?['subtitle'],
+                                  'perma_url':
+                                      queue[index].extras?['perma_url'],
                                 },
                               ),
                             ],
                             ReorderableDragStartListener(
                               key: Key(
-                                '${queue[queueStateIndex + index].id}#${queueStateIndex + index}',
+                                '${queue[index].id}#$index',
                               ),
                               index: index,
-                              enabled: (queueStateIndex + index) !=
-                                  queueState.queueIndex,
+                              enabled: index != queueState.queueIndex,
                               child: const Icon(Icons.drag_handle_rounded),
                             ),
                           ],
@@ -1091,7 +1110,7 @@ class NowPlayingStream extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      // if (queue[queueStateIndex + index]
+                      // if (queue[index]
                       //         .extras?['addedByAutoplay'] as bool? ??
                       //     false)
                       //   Column(
@@ -1138,7 +1157,7 @@ class NowPlayingStream extends StatelessWidget {
                           borderRadius: BorderRadius.circular(7.0),
                         ),
                         clipBehavior: Clip.antiAlias,
-                        child: (queue[queueStateIndex + index].artUri == null)
+                        child: (queue[index].artUri == null)
                             ? const SizedBox.square(
                                 dimension: 50,
                                 child: Image(
@@ -1147,9 +1166,7 @@ class NowPlayingStream extends StatelessWidget {
                               )
                             : FutureBuilder(
                                 future: File(
-                                  queue[queueStateIndex + index]
-                                      .artUri!
-                                      .toFilePath(),
+                                  queue[index].artUri!.toFilePath(),
                                 ).length(),
                                 builder: (context, snapshot) => snapshot
                                             .hasError ||
@@ -1163,7 +1180,7 @@ class NowPlayingStream extends StatelessWidget {
                                       )
                                     : SizedBox.square(
                                         dimension: 50,
-                                        child: queue[queueStateIndex + index]
+                                        child: queue[index]
                                                 .artUri
                                                 .toString()
                                                 .startsWith('file:')
@@ -1171,8 +1188,7 @@ class NowPlayingStream extends StatelessWidget {
                                                 fit: BoxFit.cover,
                                                 image: FileImage(
                                                   File(
-                                                    queue[queueStateIndex +
-                                                            index]
+                                                    queue[index]
                                                         .artUri!
                                                         .toFilePath(),
                                                   ),
@@ -1201,8 +1217,7 @@ class NowPlayingStream extends StatelessWidget {
                                                     'assets/cover.jpg',
                                                   ),
                                                 ),
-                                                imageUrl: queue[
-                                                        queueStateIndex + index]
+                                                imageUrl: queue[index]
                                                     .artUri
                                                     .toString(),
                                               ),
@@ -1212,21 +1227,20 @@ class NowPlayingStream extends StatelessWidget {
                     ],
                   ),
                   title: Text(
-                    queue[queueStateIndex + index].title,
+                    queue[index].title,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontWeight:
-                          queueStateIndex + index == queueState.queueIndex
-                              ? FontWeight.w600
-                              : FontWeight.normal,
+                      fontWeight: index == queueState.queueIndex
+                          ? FontWeight.w600
+                          : FontWeight.normal,
                     ),
                   ),
                   subtitle: Text(
-                    queue[queueStateIndex + index].artist!,
+                    queue[index].artist!,
                     overflow: TextOverflow.ellipsis,
                   ),
                   onTap: () {
-                    audioHandler.skipToQueueItem(queueStateIndex + index);
+                    audioHandler.skipToQueueItem(index);
                   },
                 ),
               ),
