@@ -103,7 +103,7 @@ class Lyrics {
       final Response res =
           await get(lyricsUrl, headers: {'Accept': 'application/json'});
 
-      final List<String> rawLyrics = res.body.split('-->');
+      final List<String> rawLyrics = utf8.decode(res.bodyBytes).split('-->');
       Map fetchedLyrics = {};
       if (rawLyrics.length > 1) {
         fetchedLyrics = json.decode(rawLyrics[1]) as Map;
@@ -143,7 +143,8 @@ class Lyrics {
     final Response res =
         await get(lyricsUrl, headers: {'Accept': 'application/json'});
     if (res.statusCode == 200) {
-      final Map lyricsData = await json.decode(res.body) as Map;
+      final Map lyricsData =
+          await json.decode(utf8.decode(res.bodyBytes)) as Map;
       if (lyricsData['error'] == null) {
         if (lyricsData['syncedLyrics'] != null &&
             lyricsData['syncedLyrics'] != '') {
@@ -244,7 +245,8 @@ class Lyrics {
           await get(lyricsUrl, headers: {'Accept': 'application/json'});
 
       if (res.statusCode == 200) {
-        final Map lyricsData = await json.decode(res.body) as Map;
+        final Map lyricsData =
+            await json.decode(utf8.decode(res.bodyBytes)) as Map;
         if (lyricsData['error'] == false) {
           final List lines = await lyricsData['lines'] as List;
           if (lyricsData['syncType'] == 'LINE_SYNCED') {
@@ -283,34 +285,40 @@ class Lyrics {
         '</div></div></div></div></div><div><span class="hwc"><div class="BNeawe uEec3 AP7Wnd">';
     String lyrics = '';
     try {
-      lyrics = (await get(
-        Uri.parse(Uri.encodeFull('$url$title by $artist lyrics')),
-      ))
-          .body;
+      lyrics = utf8.decode(
+        (await get(
+          Uri.parse(Uri.encodeFull('$url$title by $artist lyrics')),
+        ))
+            .bodyBytes,
+      );
       lyrics = lyrics.split(delimiter1).last;
       lyrics = lyrics.split(delimiter2).first;
       if (lyrics.contains('<meta charset="UTF-8">')) throw Error();
     } catch (_) {
       try {
-        lyrics = (await get(
-          Uri.parse(
-            Uri.encodeFull('$url$title by $artist song lyrics'),
-          ),
-        ))
-            .body;
+        lyrics = utf8.decode(
+          (await get(
+            Uri.parse(
+              Uri.encodeFull('$url$title by $artist song lyrics'),
+            ),
+          ))
+              .bodyBytes,
+        );
         lyrics = lyrics.split(delimiter1).last;
         lyrics = lyrics.split(delimiter2).first;
         if (lyrics.contains('<meta charset="UTF-8">')) throw Error();
       } catch (_) {
         try {
-          lyrics = (await get(
-            Uri.parse(
-              Uri.encodeFull(
-                '$url${title.split("-").first} by $artist lyrics',
+          lyrics = utf8.decode(
+            (await get(
+              Uri.parse(
+                Uri.encodeFull(
+                  '$url${title.split("-").first} by $artist lyrics',
+                ),
               ),
-            ),
-          ))
-              .body;
+            ))
+                .bodyBytes,
+          );
           lyrics = lyrics.split(delimiter1).last;
           lyrics = lyrics.split(delimiter2).first;
           if (lyrics.contains('<meta charset="UTF-8">')) throw Error();
@@ -350,7 +358,7 @@ class Lyrics {
     final List<String?> lyrics = RegExp(
       r'<span class=\"lyrics__content__ok\">(.*?)<\/span>',
       dotAll: true,
-    ).allMatches(res.body).map((m) => m[1]).toList();
+    ).allMatches(utf8.decode(res.bodyBytes)).map((m) => m[1]).toList();
 
     return lyrics.isEmpty ? '' : lyrics.join('\n');
   }

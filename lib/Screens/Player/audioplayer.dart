@@ -22,6 +22,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:audiotagger/audiotagger.dart';
 import 'package:blackhole/CustomWidgets/add_playlist.dart';
 import 'package:blackhole/CustomWidgets/animated_text.dart';
 import 'package:blackhole/CustomWidgets/copy_clipboard.dart';
@@ -2406,11 +2407,11 @@ class _LyricsProviderState extends State<LyricsProvider> {
   final lyricUI = UINetease();
   LyricsReaderModel? lyricsReaderModel;
 
-  void fetchLyrics() {
+  void fetchLyrics({bool forceFetch = false}) {
     Logger.root.info('Fetching lyrics for ${widget.mediaItem.title}');
     done.value = false;
     lyricsSource.value = '';
-    if (widget.offline) {
+    if (widget.offline && !forceFetch) {
       Lyrics.getOffLyrics(
         widget.mediaItem.extras!['url'].toString(),
       ).then((value) {
@@ -2468,6 +2469,23 @@ class _LyricsProviderState extends State<LyricsProvider> {
         lyricsReaderModel = LyricsModelBuilder.create()
             .bindLyricToMain(lyrics['lyrics'].toString())
             .getModel();
+
+        // always save lyrics for offline songs if not present
+        if (widget.offline) {
+          Logger.root.info('Started lyrics tag editing');
+          final tagger = Audiotagger();
+          tagger
+              .writeTag(
+            path: widget.mediaItem.extras!['url'].toString(),
+            tagField: 'lyrics',
+            value: lyrics['lyrics'].toString(),
+          )
+              .then(
+            (bool? result) {
+              Logger.root.info('Finished lyrics tag editing');
+            },
+          );
+        }
       });
     }
   }
@@ -2511,6 +2529,31 @@ class _LyricsProviderState extends State<LyricsProvider> {
                         ),
                       ),
                       const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 25),
+                        child: Card(
+                          elevation: 10.0,
+                          margin: const EdgeInsets.symmetric(vertical: 10.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          color: Theme.of(context).cardColor.withOpacity(0.4),
+                          clipBehavior: Clip.antiAlias,
+                          child: IconButton(
+                            tooltip:
+                                AppLocalizations.of(context)!.getLyricsOnline,
+                            onPressed: () {
+                              done.value = false;
+                              fetchLyrics(forceFetch: true);
+                            },
+                            icon: const Icon(Icons.refresh_rounded),
+                            color: Theme.of(context)
+                                .iconTheme
+                                .color!
+                                .withOpacity(0.6),
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(right: 25),
                         child: Card(
