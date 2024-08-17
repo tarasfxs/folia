@@ -128,53 +128,84 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 }
                 return Future.value(false);
               },
-              // TODO: readd gradientcontainer when no mediaitem
               child: ValueListenableBuilder(
                 valueListenable: gradientColor,
-                builder: (context, value, child) => Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(15),
-                    ),
-                    color: (value?[0]?.computeLuminance() ?? 0) > 0.4
-                        ? (value?[1]?.computeLuminance() ?? 0) > 0.5
-                            ? HSLColor.fromColor(value?[0] ?? Colors.black)
-                                .withLightness(0.5)
-                                .toColor()
-                            : (value?[1] ?? Colors.black)
-                        : value?[0] ?? Colors.black,
-                  ),
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 1.0,
-                  ),
-                  child: SizedBox(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        miniplayerTile(
-                          context: context,
-                          preferredMiniButtons: preferredMiniButtons,
-                          useDense: useDense,
-                          title: mediaItem?.title ?? '',
-                          subtitle: mediaItem?.artist ?? '',
-                          imagePath: (isLocal
-                                  ? mediaItem?.artUri?.toFilePath()
-                                  : mediaItem?.artUri?.toString()) ??
-                              '',
-                          isLocalImage: isLocal,
-                          isDummy: mediaItem == null,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: positionSlider(
-                            mediaItem?.duration?.inSeconds.toDouble(),
+                builder: (context, value, child) => value == null
+                    ? GradientContainer(
+                        borderRadius: true,
+                        child: SizedBox(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              miniplayerTile(
+                                context: context,
+                                preferredMiniButtons: preferredMiniButtons,
+                                useDense: useDense,
+                                title: mediaItem?.title ?? '',
+                                subtitle: mediaItem?.artist ?? '',
+                                imagePath: (isLocal
+                                        ? mediaItem?.artUri?.toFilePath()
+                                        : mediaItem?.artUri?.toString()) ??
+                                    '',
+                                isLocalImage: isLocal,
+                                isDummy: mediaItem == null,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: positionSlider(
+                                  mediaItem?.duration?.inSeconds.toDouble(),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(15),
+                          ),
+                          color: (value[0]?.computeLuminance() ?? 0) > 0.4
+                              ? (value[1]?.computeLuminance() ?? 0) > 0.5
+                                  ? HSLColor.fromColor(value[0] ?? Colors.black)
+                                      .withLightness(0.5)
+                                      .toColor()
+                                  : (value[1] ?? Colors.black)
+                              : value[0] ?? Colors.black,
+                        ),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                          vertical: 1.0,
+                        ),
+                        child: SizedBox(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              miniplayerTile(
+                                context: context,
+                                preferredMiniButtons: preferredMiniButtons,
+                                useDense: useDense,
+                                title: mediaItem?.title ?? '',
+                                subtitle: mediaItem?.artist ?? '',
+                                imagePath: (isLocal
+                                        ? mediaItem?.artUri?.toFilePath()
+                                        : mediaItem?.artUri?.toString()) ??
+                                    '',
+                                isLocalImage: isLocal,
+                                isDummy: mediaItem == null,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: positionSlider(
+                                  mediaItem?.duration?.inSeconds.toDouble(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
               ),
             ),
           );

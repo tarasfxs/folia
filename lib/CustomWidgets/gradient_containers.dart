@@ -24,7 +24,12 @@ import 'package:get_it/get_it.dart';
 class GradientContainer extends StatefulWidget {
   final Widget? child;
   final bool? opacity;
-  const GradientContainer({required this.child, this.opacity});
+  final bool? borderRadius;
+  const GradientContainer({
+    required this.child,
+    this.opacity,
+    this.borderRadius,
+  });
   @override
   _GradientContainerState createState() => _GradientContainerState();
 }
@@ -48,7 +53,18 @@ class _GradientContainerState extends State<GradientContainer> {
                   Colors.white,
                 ],
         ),
+        borderRadius: widget.borderRadius ?? false
+            ? const BorderRadius.all(
+                Radius.circular(15),
+              )
+            : null,
       ),
+      margin: widget.borderRadius ?? false
+          ? const EdgeInsets.symmetric(
+              horizontal: 8.0,
+              vertical: 1.0,
+            )
+          : null,
       child: widget.child,
     );
   }

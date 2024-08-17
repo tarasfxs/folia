@@ -1022,7 +1022,7 @@ class NowPlayingStream extends StatelessWidget {
             audioHandler.moveQueueItem(oldIndex, newIndex);
           },
           scrollController: scrollController,
-          physics: const BouncingScrollPhysics(),
+          physics: const ClampingScrollPhysics(),
           padding: const EdgeInsets.only(bottom: 10),
           shrinkWrap: true,
           itemCount: queue.length,
@@ -1163,65 +1163,65 @@ class NowPlayingStream extends StatelessWidget {
                                   image: AssetImage('assets/cover.jpg'),
                                 ),
                               )
-                            : FutureBuilder(
-                                future: File(
-                                  queue[index].artUri!.toFilePath(),
-                                ).length(),
-                                builder: (context, snapshot) => snapshot
-                                            .hasError ||
-                                        !snapshot.hasData ||
-                                        (snapshot.hasData && snapshot.data == 0)
-                                    ? const SizedBox.square(
-                                        dimension: 50,
-                                        child: Image(
-                                          image: AssetImage('assets/cover.jpg'),
-                                        ),
-                                      )
-                                    : SizedBox.square(
-                                        dimension: 50,
-                                        child: queue[index]
-                                                .artUri
-                                                .toString()
-                                                .startsWith('file:')
-                                            ? Image(
-                                                fit: BoxFit.cover,
-                                                image: FileImage(
-                                                  File(
-                                                    queue[index]
-                                                        .artUri!
-                                                        .toFilePath(),
-                                                  ),
+                            : queue[index].artUri.toString().startsWith('file:')
+                                ? FutureBuilder(
+                                    future: File(
+                                      queue[index].artUri!.toFilePath(),
+                                    ).length(),
+                                    builder: (context, snapshot) =>
+                                        snapshot.hasError ||
+                                                !snapshot.hasData ||
+                                                (snapshot.hasData &&
+                                                    snapshot.data == 0)
+                                            ? const SizedBox.square(
+                                                dimension: 50,
+                                                child: Image(
+                                                  image: AssetImage(
+                                                      'assets/cover.jpg'),
                                                 ),
                                               )
-                                            : CachedNetworkImage(
-                                                fit: BoxFit.cover,
-                                                errorWidget: (
-                                                  BuildContext context,
-                                                  _,
-                                                  __,
-                                                ) =>
-                                                    const Image(
+                                            : SizedBox.square(
+                                                dimension: 50,
+                                                child: Image(
                                                   fit: BoxFit.cover,
-                                                  image: AssetImage(
-                                                    'assets/cover.jpg',
+                                                  image: FileImage(
+                                                    File(
+                                                      queue[index]
+                                                          .artUri!
+                                                          .toFilePath(),
+                                                    ),
                                                   ),
                                                 ),
-                                                placeholder: (
-                                                  BuildContext context,
-                                                  _,
-                                                ) =>
-                                                    const Image(
-                                                  fit: BoxFit.cover,
-                                                  image: AssetImage(
-                                                    'assets/cover.jpg',
-                                                  ),
-                                                ),
-                                                imageUrl: queue[index]
-                                                    .artUri
-                                                    .toString(),
                                               ),
+                                  )
+                                : SizedBox.square(
+                                    dimension: 50,
+                                    child: CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      errorWidget: (
+                                        BuildContext context,
+                                        _,
+                                        __,
+                                      ) =>
+                                          const Image(
+                                        fit: BoxFit.cover,
+                                        image: AssetImage(
+                                          'assets/cover.jpg',
+                                        ),
                                       ),
-                              ),
+                                      placeholder: (
+                                        BuildContext context,
+                                        _,
+                                      ) =>
+                                          const Image(
+                                        fit: BoxFit.cover,
+                                        image: AssetImage(
+                                          'assets/cover.jpg',
+                                        ),
+                                      ),
+                                      imageUrl: queue[index].artUri.toString(),
+                                    ),
+                                  ),
                       ),
                     ],
                   ),
