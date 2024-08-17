@@ -103,7 +103,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
             }
           }
 
-          return Dismissible(
+          return /* Dismissible(
             key: const Key('miniplayer'),
             direction: DismissDirection.vertical,
             confirmDismiss: (DismissDirection direction) {
@@ -115,8 +115,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 }
               }
               return Future.value(false);
-            },
-            child: Dismissible(
+            }, */
+              /* Dismissible(
               key: Key(mediaItem?.id ?? 'nothingPlaying'),
               confirmDismiss: (DismissDirection direction) {
                 if (mediaItem != null) {
@@ -128,86 +128,83 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 }
                 return Future.value(false);
               },
-              child: ValueListenableBuilder(
-                valueListenable: gradientColor,
-                builder: (context, value, child) => value == null
-                    ? GradientContainer(
-                        borderRadius: true,
-                        child: SizedBox(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              miniplayerTile(
-                                context: context,
-                                preferredMiniButtons: preferredMiniButtons,
-                                useDense: useDense,
-                                title: mediaItem?.title ?? '',
-                                subtitle: mediaItem?.artist ?? '',
-                                imagePath: (isLocal
-                                        ? mediaItem?.artUri?.toFilePath()
-                                        : mediaItem?.artUri?.toString()) ??
-                                    '',
-                                isLocalImage: isLocal,
-                                isDummy: mediaItem == null,
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: positionSlider(
-                                  mediaItem?.duration?.inSeconds.toDouble(),
-                                ),
-                              ),
-                            ],
+              child: */
+              ValueListenableBuilder(
+            valueListenable: gradientColor,
+            builder: (context, value, child) => value == null
+                ? GradientContainer(
+                    borderRadius: true,
+                    child: SizedBox(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          miniplayerTile(
+                            context: context,
+                            preferredMiniButtons: preferredMiniButtons,
+                            useDense: useDense,
+                            title: mediaItem?.title ?? '',
+                            subtitle: mediaItem?.artist ?? '',
+                            imagePath: (isLocal
+                                    ? mediaItem?.artUri?.toFilePath()
+                                    : mediaItem?.artUri?.toString()) ??
+                                '',
+                            isLocalImage: isLocal,
+                            isDummy: mediaItem == null,
                           ),
-                        ),
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(15),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: positionSlider(
+                              mediaItem?.duration?.inSeconds.toDouble(),
+                            ),
                           ),
-                          color: (value[0]?.computeLuminance() ?? 0) > 0.4
-                              ? (value[1]?.computeLuminance() ?? 0) > 0.5
-                                  ? HSLColor.fromColor(value[0] ?? Colors.black)
-                                      .withLightness(0.5)
-                                      .toColor()
-                                  : (value[1] ?? Colors.black)
-                              : value[0] ?? Colors.black,
-                        ),
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 1.0,
-                        ),
-                        child: SizedBox(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              miniplayerTile(
-                                context: context,
-                                preferredMiniButtons: preferredMiniButtons,
-                                useDense: useDense,
-                                title: mediaItem?.title ?? '',
-                                subtitle: mediaItem?.artist ?? '',
-                                imagePath: (isLocal
-                                        ? mediaItem?.artUri?.toFilePath()
-                                        : mediaItem?.artUri?.toString()) ??
-                                    '',
-                                isLocalImage: isLocal,
-                                isDummy: mediaItem == null,
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: positionSlider(
-                                  mediaItem?.duration?.inSeconds.toDouble(),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        ],
                       ),
-              ),
-            ),
+                    ),
+                  )
+                : Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(15),
+                      ),
+                      color: (value[0]?.computeLuminance() ?? 0) > 0.4
+                          ? (value[1]?.computeLuminance() ?? 0) > 0.5
+                              ? HSLColor.fromColor(value[0] ?? Colors.black)
+                                  .withLightness(0.5)
+                                  .toColor()
+                              : (value[1] ?? Colors.black)
+                          : value[0] ?? Colors.black,
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 1.0,
+                    ),
+                    child: SizedBox(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          miniplayerTile(
+                            context: context,
+                            preferredMiniButtons: preferredMiniButtons,
+                            useDense: useDense,
+                            title: mediaItem?.title ?? '',
+                            subtitle: mediaItem?.artist ?? '',
+                            imagePath: (isLocal
+                                    ? mediaItem?.artUri?.toFilePath()
+                                    : mediaItem?.artUri?.toString()) ??
+                                '',
+                            isLocalImage: isLocal,
+                            isDummy: mediaItem == null,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: positionSlider(
+                              mediaItem?.duration?.inSeconds.toDouble(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
           );
         },
       ),
@@ -226,11 +223,11 @@ class _MiniPlayerState extends State<MiniPlayer> {
   }) {
     return ListTile(
       dense: useDense,
-      onTap: isDummy
+      /*  onTap: isDummy
           ? null
           : () {
               Navigator.pushNamed(context, '/player');
-            },
+            }, */
       title: Text(
         isDummy ? 'Now Playing' : title,
         maxLines: 1,
