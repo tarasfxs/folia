@@ -163,9 +163,6 @@ class _MiniPlayerState extends State<MiniPlayer> {
                   )
                 : Container(
                     decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(15),
-                      ),
                       color: (value[0]?.computeLuminance() ?? 0) > 0.4
                           ? (value[1]?.computeLuminance() ?? 0) > 0.5
                               ? HSLColor.fromColor(value[0] ?? Colors.black)
@@ -173,10 +170,6 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                   .toColor()
                               : (value[1] ?? Colors.black)
                           : value[0] ?? Colors.black,
-                    ),
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 1.0,
                     ),
                     child: SizedBox(
                       child: Column(
@@ -232,17 +225,19 @@ class _MiniPlayerState extends State<MiniPlayer> {
         isDummy ? 'Now Playing' : title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontSize: 15),
       ),
       subtitle: Text(
         isDummy ? 'Unknown' : subtitle,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontSize: 13),
       ),
       leading: Hero(
         tag: 'currentArtwork',
         child: imageCard(
           elevation: 8,
-          boxDimension: useDense ? 40.0 : 50.0,
+          boxDimension: useDense ? 44.0 : 50.0,
           localImage: isLocalImage,
           imageUrl: isLocalImage ? imagePath : imagePath,
         ),

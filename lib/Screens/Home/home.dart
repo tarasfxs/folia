@@ -257,7 +257,6 @@ class _HomePageState extends State<HomePage> {
 
   final PageController _pageController = PageController();
   final PersistentTabController _controller = PersistentTabController();
-  double _panelPosition = 0;
 
   @override
   void initState() {
@@ -517,19 +516,13 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         body: SlidingUpPanel(
-          minHeight: useDense ? 70 : 78,
+          minHeight: useDense ? 72 : 78,
           maxHeight: MediaQuery.of(context).size.height,
           collapsed: miniplayer,
-          margin: EdgeInsets.only(bottom: 60 - 60 * _panelPosition),
-          panelBuilder: (sc) => AnimatedOpacity(
-            opacity: _panelPosition * 2 > 1 ? 1 : _panelPosition * 2,
-            duration: const Duration(milliseconds: 300),
-            child: PlayScreen(
-              scrollController: sc,
-            ),
+          panelBuilder: (sc) => PlayScreen(
+            scrollController: sc,
           ),
           color: Colors.transparent,
-          onPanelSlide: (position) => setState(() => _panelPosition = position),
           body: Row(
             children: [
               if (rotated)
@@ -613,36 +606,39 @@ class _HomePageState extends State<HomePage> {
                   context,
                   controller: _controller,
                   itemCount: sectionsToShow.length,
-                  navBarHeight: 60,
-                  confineToSafeArea: false,
+                  navBarHeight: 132,
+                  // confineToSafeArea: false,
                   backgroundColor: Colors.transparent,
                   customWidget: ColoredBox(
                     color: Colors.transparent,
                     child: !rotated
-                        ? ValueListenableBuilder(
-                            valueListenable: _selectedIndex,
-                            builder: (
-                              BuildContext context,
-                              int indexValue,
-                              Widget? child,
-                            ) {
-                              return AnimatedContainer(
-                                duration: const Duration(milliseconds: 100),
-                                height: 60,
-                                child: CustomBottomNavBar(
-                                  currentIndex: indexValue,
-                                  backgroundColor:
-                                      Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.black.withOpacity(0.93)
-                                          : Colors.white.withOpacity(0.93),
-                                  onTap: (index) {
-                                    onItemTapped(index);
-                                  },
-                                  items: _navBarItems(context),
-                                ),
-                              );
-                            },
+                        ? Padding(
+                            padding: const EdgeInsets.only(bottom: 72),
+                            child: ValueListenableBuilder(
+                              valueListenable: _selectedIndex,
+                              builder: (
+                                BuildContext context,
+                                int indexValue,
+                                Widget? child,
+                              ) {
+                                return AnimatedContainer(
+                                  duration: const Duration(milliseconds: 100),
+                                  height: 60,
+                                  child: CustomBottomNavBar(
+                                    currentIndex: indexValue,
+                                    backgroundColor:
+                                        Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.black.withOpacity(0.93)
+                                            : Colors.white.withOpacity(0.93),
+                                    onTap: (index) {
+                                      onItemTapped(index);
+                                    },
+                                    items: _navBarItems(context),
+                                  ),
+                                );
+                              },
+                            ),
                           )
                         : null,
                   ),
