@@ -266,23 +266,6 @@ class _PlayScreenState extends State<PlayScreen> {
                   },
                 ), */
                 actions: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.playlist_play,
-                    ),
-                    tooltip: AppLocalizations.of(context)!.upNext,
-                    onPressed: () => Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        opaque: false,
-                        pageBuilder: (_, __, ___) => PlayerQueue(
-                          panelController: _panelController,
-                          audioHandler: audioHandler,
-                          gradientColor: gradientColor,
-                        ),
-                      ),
-                    ),
-                  ),
                   if (MediaQuery.of(context).size.width >
                       MediaQuery.of(context).size.height)
                     IconButton(
@@ -311,6 +294,23 @@ class _PlayScreenState extends State<PlayScreen> {
                         }
                       },
                     ),
+                  IconButton(
+                    icon: const Icon(
+                      Icons.playlist_play,
+                    ),
+                    tooltip: AppLocalizations.of(context)!.upNext,
+                    onPressed: () => Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        opaque: false,
+                        pageBuilder: (_, __, ___) => PlayerQueue(
+                          panelController: _panelController,
+                          audioHandler: audioHandler,
+                          gradientColor: gradientColor,
+                        ),
+                      ),
+                    ),
+                  ),
                   PopupMenuButton(
                     icon: const Icon(
                       Icons.more_vert_rounded,
