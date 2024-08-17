@@ -33,6 +33,7 @@ import 'package:blackhole/CustomWidgets/like_button.dart';
 import 'package:blackhole/CustomWidgets/seek_bar.dart';
 import 'package:blackhole/CustomWidgets/snackbar.dart';
 import 'package:blackhole/CustomWidgets/textinput_dialog.dart';
+import 'package:blackhole/Helpers/audio_query.dart';
 import 'package:blackhole/Helpers/audio_service_helper.dart';
 import 'package:blackhole/Helpers/config.dart';
 import 'package:blackhole/Helpers/dominant_color.dart';
@@ -55,6 +56,8 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:on_audio_query/on_audio_query.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -967,6 +970,55 @@ class NowPlayingStream extends StatelessWidget {
     this.headHeight = 50,
   });
 
+  @override
+  Widget build(BuildContext context) {
+    final String? tempPath =
+        Hive.box('settings').get('tempDirPath')?.toString();
+    return tempPath != null
+        ? NowPlayingStreamSongsList(
+            audioHandler: audioHandler,
+            tempPath: tempPath,
+            scrollController: ScrollController(),
+            panelController: panelController,
+          )
+        : FutureBuilder(
+            future: getTemporaryDirectory(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                Hive.box('settings').put('tempDirPath', snapshot.data!.path);
+                return NowPlayingStreamSongsList(
+                  audioHandler: audioHandler,
+                  tempPath: snapshot.data!.path,
+                  scrollController: ScrollController(),
+                  panelController: panelController,
+                  head: head,
+                  headHeight: headHeight,
+                );
+              } else {
+                return const CircularProgressIndicator();
+              }
+            },
+          );
+  }
+}
+
+class NowPlayingStreamSongsList extends StatelessWidget {
+  final AudioPlayerHandler audioHandler;
+  final ScrollController? scrollController;
+  final PanelController? panelController;
+  final bool head;
+  final double headHeight;
+  final String tempPath;
+
+  const NowPlayingStreamSongsList({
+    required this.audioHandler,
+    required this.tempPath,
+    this.scrollController,
+    this.panelController,
+    this.head = false,
+    this.headHeight = 50,
+  });
+
   void _updateScrollController(
     ScrollController? controller,
     int itemIndex,
@@ -1164,35 +1216,22 @@ class NowPlayingStream extends StatelessWidget {
                                 ),
                               )
                             : queue[index].artUri.toString().startsWith('file:')
-                                ? FutureBuilder(
-                                    future: File(
-                                      queue[index].artUri!.toFilePath(),
-                                    ).length(),
-                                    builder: (context, snapshot) =>
-                                        snapshot.hasError ||
-                                                !snapshot.hasData ||
-                                                (snapshot.hasData &&
-                                                    snapshot.data == 0)
-                                            ? const SizedBox.square(
-                                                dimension: 50,
-                                                child: Image(
-                                                  image: AssetImage(
-                                                      'assets/cover.jpg'),
-                                                ),
-                                              )
-                                            : SizedBox.square(
-                                                dimension: 50,
-                                                child: Image(
-                                                  fit: BoxFit.cover,
-                                                  image: FileImage(
-                                                    File(
-                                                      queue[index]
-                                                          .artUri!
-                                                          .toFilePath(),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
+                                ? SizedBox.square(
+                                    dimension: 50,
+                                    child:
+                                        OfflineAudioQuery.offlineArtworkWidget(
+                                      id: int.parse(queue[index].id),
+                                      type: ArtworkType.AUDIO,
+                                      tempPath: tempPath,
+                                      fileName: queue[index]
+                                          .extras!['url']
+                                          .split('/')
+                                          .last
+                                          .split('.')
+                                          .first
+                                          .toString(),
+                                      queueView: true,
+                                    ),
                                   )
                                 : SizedBox.square(
                                     dimension: 50,
@@ -2296,7 +2335,7 @@ class PlayerQueue extends StatelessWidget {
         Navigator.pop(context);
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        //resizeToAvoidBottomInset: false,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
           elevation: 0,
@@ -2315,6 +2354,7 @@ class PlayerQueue extends StatelessWidget {
           valueListenable: gradientColor,
           builder: (context, value, child) => AnimatedContainer(
             duration: const Duration(milliseconds: 600),
+            height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: gradientType == 'simple'
