@@ -100,7 +100,7 @@ class PlayerInvoke {
       id: response.id.toString(),
       album: playAlbum,
       duration: Duration(milliseconds: playDuration),
-      title: playTitle.split('(')[0],
+      title: playTitle,
       artist: playArtist,
       genre: response.genre,
       artUri: Uri.file(imagePath),
