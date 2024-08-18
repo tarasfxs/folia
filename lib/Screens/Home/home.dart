@@ -47,7 +47,6 @@ import 'package:logging/logging.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
@@ -515,228 +514,215 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        body: SlidingUpPanel(
-          minHeight: useDense ? 72 : 78,
-          maxHeight: MediaQuery.of(context).size.height,
-          collapsed: miniplayer,
-          panelBuilder: (sc) => PlayScreen(
-            scrollController: sc,
-          ),
-          color: Colors.transparent,
-          body: Row(
-            children: [
-              if (rotated)
-                ValueListenableBuilder(
-                  valueListenable: _selectedIndex,
-                  builder:
-                      (BuildContext context, int indexValue, Widget? child) {
-                    return NavigationRail(
-                      minWidth: 70.0,
-                      groupAlignment: 0.0,
-                      backgroundColor:
-                          // Colors.transparent,
-                          Theme.of(context).cardColor,
-                      selectedIndex: indexValue,
-                      onDestinationSelected: (int index) {
-                        onItemTapped(index);
-                      },
-                      labelType: screenWidth > 1050
-                          ? NavigationRailLabelType.selected
-                          : NavigationRailLabelType.none,
-                      selectedLabelTextStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      unselectedLabelTextStyle: TextStyle(
-                        color: Theme.of(context).iconTheme.color,
-                      ),
-                      selectedIconTheme: Theme.of(context).iconTheme.copyWith(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                      unselectedIconTheme: Theme.of(context).iconTheme,
-                      useIndicator: screenWidth < 1050,
-                      indicatorColor: Theme.of(context)
-                          .colorScheme
-                          .secondary
-                          .withOpacity(0.2),
-                      leading: homeDrawer(
-                        context: context,
-                        padding: const EdgeInsets.symmetric(vertical: 5.0),
-                      ),
-                      destinations: sectionsToShow.map((e) {
-                        switch (e) {
-                          case 'Home':
-                            return NavigationRailDestination(
-                              icon: const Icon(Icons.home_rounded),
-                              label: Text(AppLocalizations.of(context)!.home),
-                            );
-                          case 'Top Charts':
-                            return NavigationRailDestination(
-                              icon: const Icon(Icons.trending_up_rounded),
-                              label: Text(
-                                AppLocalizations.of(context)!.topCharts,
-                              ),
-                            );
-                          case 'YouTube':
-                            return NavigationRailDestination(
-                              icon: const Icon(MdiIcons.youtube),
-                              label:
-                                  Text(AppLocalizations.of(context)!.youTube),
-                            );
-                          case 'Library':
-                            return NavigationRailDestination(
-                              icon: const Icon(Icons.my_library_music_rounded),
-                              label:
-                                  Text(AppLocalizations.of(context)!.library),
-                            );
-                          default:
-                            return NavigationRailDestination(
-                              icon: const Icon(Icons.settings_rounded),
-                              label: Text(
-                                AppLocalizations.of(context)!.settings,
-                              ),
-                            );
-                        }
-                      }).toList(),
-                    );
-                  },
-                ),
-              Expanded(
-                child: PersistentTabView.custom(
-                  context,
-                  controller: _controller,
-                  itemCount: sectionsToShow.length,
-                  navBarHeight: 132,
-                  // confineToSafeArea: false,
-                  backgroundColor: Colors.transparent,
-                  customWidget: ColoredBox(
-                    color: Colors.transparent,
-                    child: !rotated
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 72),
-                            child: ValueListenableBuilder(
-                              valueListenable: _selectedIndex,
-                              builder: (
-                                BuildContext context,
-                                int indexValue,
-                                Widget? child,
-                              ) {
-                                return AnimatedContainer(
-                                  duration: const Duration(milliseconds: 100),
-                                  height: 60,
-                                  child: CustomBottomNavBar(
-                                    currentIndex: indexValue,
-                                    backgroundColor:
-                                        Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.black.withOpacity(0.93)
-                                            : Colors.white.withOpacity(0.93),
-                                    onTap: (index) {
-                                      onItemTapped(index);
-                                    },
-                                    items: _navBarItems(context),
-                                  ),
-                                );
-                              },
+        body: Row(
+          children: [
+            if (rotated)
+              ValueListenableBuilder(
+                valueListenable: _selectedIndex,
+                builder: (BuildContext context, int indexValue, Widget? child) {
+                  return NavigationRail(
+                    minWidth: 70.0,
+                    groupAlignment: 0.0,
+                    backgroundColor:
+                        // Colors.transparent,
+                        Theme.of(context).cardColor,
+                    selectedIndex: indexValue,
+                    onDestinationSelected: (int index) {
+                      onItemTapped(index);
+                    },
+                    labelType: screenWidth > 1050
+                        ? NavigationRailLabelType.selected
+                        : NavigationRailLabelType.none,
+                    selectedLabelTextStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    unselectedLabelTextStyle: TextStyle(
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                    selectedIconTheme: Theme.of(context).iconTheme.copyWith(
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                    unselectedIconTheme: Theme.of(context).iconTheme,
+                    useIndicator: screenWidth < 1050,
+                    indicatorColor: Theme.of(context)
+                        .colorScheme
+                        .secondary
+                        .withOpacity(0.2),
+                    leading: homeDrawer(
+                      context: context,
+                      padding: const EdgeInsets.symmetric(vertical: 5.0),
+                    ),
+                    destinations: sectionsToShow.map((e) {
+                      switch (e) {
+                        case 'Home':
+                          return NavigationRailDestination(
+                            icon: const Icon(Icons.home_rounded),
+                            label: Text(AppLocalizations.of(context)!.home),
+                          );
+                        case 'Top Charts':
+                          return NavigationRailDestination(
+                            icon: const Icon(Icons.trending_up_rounded),
+                            label: Text(
+                              AppLocalizations.of(context)!.topCharts,
                             ),
-                          )
-                        : null,
-                  ),
-                  screens: sectionsToShow.map((e) {
-                    switch (e) {
-                      case 'Home':
-                        return CustomNavBarScreen(
-                          routeAndNavigatorSettings: RouteAndNavigatorSettings(
-                            routes: namedRoutes,
-                            onGenerateRoute: (RouteSettings settings) {
-                              if (settings.name == '/player') {
-                                return PageRouteBuilder(
-                                  opaque: false,
-                                  pageBuilder: (_, __, ___) =>
-                                      const PlayScreen(),
-                                );
-                              }
-                              return HandleRoute.handleRoute(settings.name);
-                            },
-                          ),
-                          screen: const HomeScreen(),
-                        );
-                      case 'Top Charts':
-                        return CustomNavBarScreen(
-                          routeAndNavigatorSettings: RouteAndNavigatorSettings(
-                            routes: namedRoutes,
-                            onGenerateRoute: (RouteSettings settings) {
-                              if (settings.name == '/player') {
-                                return PageRouteBuilder(
-                                  opaque: false,
-                                  pageBuilder: (_, __, ___) =>
-                                      const PlayScreen(),
-                                );
-                              }
-                              return HandleRoute.handleRoute(settings.name);
-                            },
-                          ),
-                          screen: TopCharts(
-                            pageController: _pageController,
-                          ),
-                        );
-                      case 'YouTube':
-                        return CustomNavBarScreen(
-                          routeAndNavigatorSettings: RouteAndNavigatorSettings(
-                            routes: namedRoutes,
-                            onGenerateRoute: (RouteSettings settings) {
-                              if (settings.name == '/player') {
-                                return PageRouteBuilder(
-                                  opaque: false,
-                                  pageBuilder: (_, __, ___) =>
-                                      const PlayScreen(),
-                                );
-                              }
-                              return HandleRoute.handleRoute(settings.name);
-                            },
-                          ),
-                          screen: const YouTube(),
-                        );
-                      case 'Library':
-                        return CustomNavBarScreen(
-                          routeAndNavigatorSettings: RouteAndNavigatorSettings(
-                            routes: namedRoutes,
-                            onGenerateRoute: (RouteSettings settings) {
-                              if (settings.name == '/player') {
-                                return PageRouteBuilder(
-                                  opaque: false,
-                                  pageBuilder: (_, __, ___) =>
-                                      const PlayScreen(),
-                                );
-                              }
-                              return HandleRoute.handleRoute(settings.name);
-                            },
-                          ),
-                          screen: const LibraryPage(),
-                        );
-                      default:
-                        return CustomNavBarScreen(
-                          routeAndNavigatorSettings: RouteAndNavigatorSettings(
-                            routes: namedRoutes,
-                            onGenerateRoute: (RouteSettings settings) {
-                              if (settings.name == '/player') {
-                                return PageRouteBuilder(
-                                  opaque: false,
-                                  pageBuilder: (_, __, ___) =>
-                                      const PlayScreen(),
-                                );
-                              }
-                              return HandleRoute.handleRoute(settings.name);
-                            },
-                          ),
-                          screen: NewSettingsPage(callback: callback),
-                        );
-                    }
-                  }).toList(),
-                ),
+                          );
+                        case 'YouTube':
+                          return NavigationRailDestination(
+                            icon: const Icon(MdiIcons.youtube),
+                            label: Text(AppLocalizations.of(context)!.youTube),
+                          );
+                        case 'Library':
+                          return NavigationRailDestination(
+                            icon: const Icon(Icons.my_library_music_rounded),
+                            label: Text(AppLocalizations.of(context)!.library),
+                          );
+                        default:
+                          return NavigationRailDestination(
+                            icon: const Icon(Icons.settings_rounded),
+                            label: Text(
+                              AppLocalizations.of(context)!.settings,
+                            ),
+                          );
+                      }
+                    }).toList(),
+                  );
+                },
               ),
-            ],
-          ),
+            Expanded(
+              child: PersistentTabView.custom(
+                context,
+                controller: _controller,
+                itemCount: sectionsToShow.length,
+                navBarHeight: 60 +
+                    (rotated ? 0 : 70) +
+                    (useDense ? 0 : 10) +
+                    (rotated && useDense ? 10 : 0),
+                // confineToSafeArea: false,
+                backgroundColor: Colors.transparent,
+                customWidget: ColoredBox(
+                  color: Colors.transparent,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      miniplayer,
+                      if (!rotated)
+                        ValueListenableBuilder(
+                          valueListenable: _selectedIndex,
+                          builder: (
+                            BuildContext context,
+                            int indexValue,
+                            Widget? child,
+                          ) {
+                            return AnimatedContainer(
+                              duration: const Duration(milliseconds: 100),
+                              height: 60,
+                              child: CustomBottomNavBar(
+                                currentIndex: indexValue,
+                                backgroundColor: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.black.withOpacity(0.93)
+                                    : Colors.white.withOpacity(0.93),
+                                onTap: (index) {
+                                  onItemTapped(index);
+                                },
+                                items: _navBarItems(context),
+                              ),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+                screens: sectionsToShow.map((e) {
+                  switch (e) {
+                    case 'Home':
+                      return CustomNavBarScreen(
+                        routeAndNavigatorSettings: RouteAndNavigatorSettings(
+                          routes: namedRoutes,
+                          onGenerateRoute: (RouteSettings settings) {
+                            if (settings.name == '/player') {
+                              return PageRouteBuilder(
+                                opaque: false,
+                                pageBuilder: (_, __, ___) => const PlayScreen(),
+                              );
+                            }
+                            return HandleRoute.handleRoute(settings.name);
+                          },
+                        ),
+                        screen: const HomeScreen(),
+                      );
+                    case 'Top Charts':
+                      return CustomNavBarScreen(
+                        routeAndNavigatorSettings: RouteAndNavigatorSettings(
+                          routes: namedRoutes,
+                          onGenerateRoute: (RouteSettings settings) {
+                            if (settings.name == '/player') {
+                              return PageRouteBuilder(
+                                opaque: false,
+                                pageBuilder: (_, __, ___) => const PlayScreen(),
+                              );
+                            }
+                            return HandleRoute.handleRoute(settings.name);
+                          },
+                        ),
+                        screen: TopCharts(
+                          pageController: _pageController,
+                        ),
+                      );
+                    case 'YouTube':
+                      return CustomNavBarScreen(
+                        routeAndNavigatorSettings: RouteAndNavigatorSettings(
+                          routes: namedRoutes,
+                          onGenerateRoute: (RouteSettings settings) {
+                            if (settings.name == '/player') {
+                              return PageRouteBuilder(
+                                opaque: false,
+                                pageBuilder: (_, __, ___) => const PlayScreen(),
+                              );
+                            }
+                            return HandleRoute.handleRoute(settings.name);
+                          },
+                        ),
+                        screen: const YouTube(),
+                      );
+                    case 'Library':
+                      return CustomNavBarScreen(
+                        routeAndNavigatorSettings: RouteAndNavigatorSettings(
+                          routes: namedRoutes,
+                          onGenerateRoute: (RouteSettings settings) {
+                            if (settings.name == '/player') {
+                              return PageRouteBuilder(
+                                opaque: false,
+                                pageBuilder: (_, __, ___) => const PlayScreen(),
+                              );
+                            }
+                            return HandleRoute.handleRoute(settings.name);
+                          },
+                        ),
+                        screen: const LibraryPage(),
+                      );
+                    default:
+                      return CustomNavBarScreen(
+                        routeAndNavigatorSettings: RouteAndNavigatorSettings(
+                          routes: namedRoutes,
+                          onGenerateRoute: (RouteSettings settings) {
+                            if (settings.name == '/player') {
+                              return PageRouteBuilder(
+                                opaque: false,
+                                pageBuilder: (_, __, ___) => const PlayScreen(),
+                              );
+                            }
+                            return HandleRoute.handleRoute(settings.name);
+                          },
+                        ),
+                        screen: NewSettingsPage(callback: callback),
+                      );
+                  }
+                }).toList(),
+              ),
+            ),
+          ],
         ),
       ),
     );
