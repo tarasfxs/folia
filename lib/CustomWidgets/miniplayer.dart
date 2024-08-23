@@ -175,8 +175,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                               : value[0] ?? Colors.black,
                         ),
                         margin: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 1.0,
+                          horizontal: 2.0,
                         ),
                         child: SizedBox(
                           child: Column(

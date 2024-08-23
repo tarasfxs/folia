@@ -599,6 +599,7 @@ class _HomePageState extends State<HomePage> {
                     (useDense ? 0 : 10) +
                     (rotated && useDense ? 10 : 0),
                 // confineToSafeArea: false,
+                resizeToAvoidBottomInset: true,
                 backgroundColor: Colors.transparent,
                 customWidget: ColoredBox(
                   color: Colors.transparent,
