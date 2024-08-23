@@ -774,14 +774,14 @@ class ControlButtons extends StatelessWidget {
   final bool shuffle;
   final bool miniplayer;
   final List buttons;
-  final Color? dominantColor;
+  final Color? buttonsColor;
 
   const ControlButtons(
     this.audioHandler, {
     this.shuffle = false,
     this.miniplayer = false,
     this.buttons = const ['Previous', 'Play/Pause', 'Next'],
-    this.dominantColor,
+    this.buttonsColor,
   });
 
   @override
@@ -823,7 +823,7 @@ class ControlButtons extends StatelessWidget {
                   icon: const Icon(Icons.skip_previous_rounded),
                   iconSize: miniplayer ? 24.0 : 45.0,
                   tooltip: AppLocalizations.of(context)!.skipPrevious,
-                  color: dominantColor ?? Theme.of(context).iconTheme.color,
+                  color: buttonsColor ?? Theme.of(context).iconTheme.color,
                   onPressed: ((queueState?.hasPrevious ?? true) || resetOnSkip)
                       ? audioHandler.skipToPrevious
                       : null,
@@ -864,7 +864,8 @@ class ControlButtons extends StatelessWidget {
                                   icon: const Icon(
                                     Icons.pause_rounded,
                                   ),
-                                  color: Theme.of(context).iconTheme.color,
+                                  color: buttonsColor ??
+                                      Theme.of(context).iconTheme.color,
                                 )
                               : IconButton(
                                   tooltip: AppLocalizations.of(context)!.play,
@@ -872,7 +873,8 @@ class ControlButtons extends StatelessWidget {
                                   icon: const Icon(
                                     Icons.play_arrow_rounded,
                                   ),
-                                  color: Theme.of(context).iconTheme.color,
+                                  color: buttonsColor ??
+                                      Theme.of(context).iconTheme.color,
                                 ),
                         )
                       else
@@ -923,7 +925,7 @@ class ControlButtons extends StatelessWidget {
                   icon: const Icon(Icons.skip_next_rounded),
                   iconSize: miniplayer ? 24.0 : 45.0,
                   tooltip: AppLocalizations.of(context)!.skipNext,
-                  color: dominantColor ?? Theme.of(context).iconTheme.color,
+                  color: buttonsColor ?? Theme.of(context).iconTheme.color,
                   onPressed: queueState?.hasNext ?? true
                       ? audioHandler.skipToNext
                       : null,

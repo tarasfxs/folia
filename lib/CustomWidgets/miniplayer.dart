@@ -130,81 +130,90 @@ class _MiniPlayerState extends State<MiniPlayer> {
               },
               child: ValueListenableBuilder(
                 valueListenable: gradientColor,
-                builder: (context, value, child) => value == null
-                    ? GradientContainer(
-                        borderRadius: true,
-                        child: SizedBox(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              miniplayerTile(
-                                context: context,
-                                preferredMiniButtons: preferredMiniButtons,
-                                useDense: useDense,
-                                title: mediaItem?.title ?? '',
-                                subtitle: mediaItem?.artist ?? '',
-                                imagePath: (isLocal
-                                        ? mediaItem?.artUri?.toFilePath()
-                                        : mediaItem?.artUri?.toString()) ??
-                                    '',
-                                isLocalImage: isLocal,
-                                isDummy: mediaItem == null,
+                builder: (context, value, child) {
+                  if (value == null) {
+                    return GradientContainer(
+                      borderRadius: true,
+                      child: SizedBox(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            miniplayerTile(
+                              context: context,
+                              preferredMiniButtons: preferredMiniButtons,
+                              useDense: useDense,
+                              title: mediaItem?.title ?? '',
+                              subtitle: mediaItem?.artist ?? '',
+                              imagePath: (isLocal
+                                      ? mediaItem?.artUri?.toFilePath()
+                                      : mediaItem?.artUri?.toString()) ??
+                                  '',
+                              isLocalImage: isLocal,
+                              isDummy: mediaItem == null,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: positionSlider(
+                                mediaItem?.duration?.inSeconds.toDouble(),
                               ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: positionSlider(
-                                  mediaItem?.duration?.inSeconds.toDouble(),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(15),
-                          ),
-                          color: (value[0]?.computeLuminance() ?? 0) > 0.4
-                              ? (value[1]?.computeLuminance() ?? 0) > 0.5
-                                  ? HSLColor.fromColor(value[0] ?? Colors.black)
-                                      .withLightness(0.5)
-                                      .toColor()
-                                  : (value[1] ?? Colors.black)
-                              : value[0] ?? Colors.black,
-                        ),
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 2.0,
-                        ),
-                        child: SizedBox(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              miniplayerTile(
-                                context: context,
-                                preferredMiniButtons: preferredMiniButtons,
-                                useDense: useDense,
-                                title: mediaItem?.title ?? '',
-                                subtitle: mediaItem?.artist ?? '',
-                                imagePath: (isLocal
-                                        ? mediaItem?.artUri?.toFilePath()
-                                        : mediaItem?.artUri?.toString()) ??
-                                    '',
-                                isLocalImage: isLocal,
-                                isDummy: mediaItem == null,
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: positionSlider(
-                                  mediaItem?.duration?.inSeconds.toDouble(),
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
+                    );
+                  } else {
+                    final Color miniplayerColor =
+                        (value[0]?.computeLuminance() ?? 0) > 0.4
+                            ? (value[1]?.computeLuminance() ?? 0) > 0.5
+                                ? HSLColor.fromColor(value[0] ?? Colors.black)
+                                    .withLightness(0.5)
+                                    .toColor()
+                                : (value[1] ?? Colors.black)
+                            : value[0] ?? Colors.black;
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(15),
+                        ),
+                        color: miniplayerColor,
+                      ),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 2.0,
+                      ),
+                      child: SizedBox(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            miniplayerTile(
+                              context: context,
+                              preferredMiniButtons: preferredMiniButtons,
+                              useDense: useDense,
+                              title: mediaItem?.title ?? '',
+                              subtitle: mediaItem?.artist ?? '',
+                              imagePath: (isLocal
+                                      ? mediaItem?.artUri?.toFilePath()
+                                      : mediaItem?.artUri?.toString()) ??
+                                  '',
+                              isLocalImage: isLocal,
+                              isDummy: mediaItem == null,
+                              buttonsColor: HSLColor.fromColor(miniplayerColor)
+                                  .withLightness(0.8)
+                                  .toColor(),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: positionSlider(
+                                mediaItem?.duration?.inSeconds.toDouble(),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                },
               ),
             ),
           );
@@ -222,6 +231,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
     bool useDense = false,
     bool isLocalImage = false,
     bool isDummy = false,
+    Color? buttonsColor,
   }) {
     return ListTile(
       dense: useDense,
@@ -259,6 +269,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
               buttons: isLocalImage
                   ? ['Like', 'Play/Pause', 'Next']
                   : preferredMiniButtons,
+              buttonsColor: buttonsColor,
             ),
     );
   }
