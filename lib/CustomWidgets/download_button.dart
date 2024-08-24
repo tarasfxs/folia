@@ -28,11 +28,13 @@ class DownloadButton extends StatefulWidget {
   final Map data;
   final String? icon;
   final double? size;
+  final Color? color;
   const DownloadButton({
     super.key,
     required this.data,
     this.icon,
     this.size,
+    this.color,
   });
 
   @override
@@ -77,7 +79,7 @@ class _DownloadButtonState extends State<DownloadButton> {
             ? IconButton(
                 icon: const Icon(Icons.download_done_rounded),
                 tooltip: 'Download Done',
-                color: Theme.of(context).colorScheme.secondary,
+                color: widget.color ?? Theme.of(context).colorScheme.secondary,
                 iconSize: widget.size ?? 24.0,
                 onPressed: () {
                   down.prepareDownload(context, widget.data);
@@ -91,7 +93,7 @@ class _DownloadButtonState extends State<DownloadButton> {
                           : Icons.save_alt,
                     ),
                     iconSize: widget.size ?? 24.0,
-                    color: Theme.of(context).iconTheme.color,
+                    color: widget.color ?? Theme.of(context).iconTheme.color,
                     tooltip: 'Download',
                     onPressed: () {
                       down.prepareDownload(context, widget.data);
@@ -103,6 +105,7 @@ class _DownloadButtonState extends State<DownloadButton> {
                         Center(
                           child: CircularProgressIndicator(
                             value: down.progress == 1 ? null : down.progress,
+                            color: widget.color,
                           ),
                         ),
                         Center(
@@ -114,7 +117,8 @@ class _DownloadButtonState extends State<DownloadButton> {
                                   Icons.close_rounded,
                                 ),
                                 iconSize: 25.0,
-                                color: Theme.of(context).iconTheme.color,
+                                color: widget.color ??
+                                    Theme.of(context).iconTheme.color,
                                 tooltip: AppLocalizations.of(
                                   context,
                                 )!

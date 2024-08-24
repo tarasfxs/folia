@@ -61,8 +61,7 @@ class _GradientContainerState extends State<GradientContainer> {
       ),
       margin: widget.borderRadius ?? false
           ? const EdgeInsets.symmetric(
-              horizontal: 8.0,
-              vertical: 1.0,
+             horizontal: 2.0,
             )
           : null,
       child: widget.child,

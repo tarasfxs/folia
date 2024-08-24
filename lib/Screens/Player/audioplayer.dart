@@ -616,13 +616,18 @@ class _PlayScreenState extends State<PlayScreen> {
                           ),
 
                           // title and controls
-                          NameNControls(
-                            mediaItem: mediaItem,
-                            offline: offline,
-                            width: constraints.maxWidth / 2,
-                            height: constraints.maxHeight,
-                            panelController: _panelController,
-                            audioHandler: audioHandler,
+                          ValueListenableBuilder(
+                            valueListenable: gradientColor,
+                            builder: (context, value, child) => NameNControls(
+                              mediaItem: mediaItem,
+                              offline: offline,
+                              width: constraints.maxWidth / 2,
+                              height: constraints.maxHeight,
+                              panelController: _panelController,
+                              audioHandler: audioHandler,
+                              gradientColor:
+                                  gradientColor.value?[0] ?? Colors.white,
+                            ),
                           ),
                         ],
                       );
@@ -641,14 +646,19 @@ class _PlayScreenState extends State<PlayScreen> {
                           ),
 
                           // title and controls
-                          NameNControls(
-                            mediaItem: mediaItem,
-                            offline: offline,
-                            width: constraints.maxWidth,
-                            height: constraints.maxHeight -
-                                (constraints.maxWidth * 0.85),
-                            panelController: _panelController,
-                            audioHandler: audioHandler,
+                          ValueListenableBuilder(
+                            valueListenable: gradientColor,
+                            builder: (context, value, child) => NameNControls(
+                              mediaItem: mediaItem,
+                              offline: offline,
+                              width: constraints.maxWidth,
+                              height: constraints.maxHeight -
+                                  (constraints.maxWidth * 0.85),
+                              panelController: _panelController,
+                              audioHandler: audioHandler,
+                              gradientColor:
+                                  gradientColor.value?[0] ?? Colors.white,
+                            ),
                           ),
 
                           // lyrics under the player
@@ -805,12 +815,14 @@ class ControlButtons extends StatelessWidget {
                           return LikeButton(
                             mediaItem: mediaItem,
                             size: 22.0,
+                            color: buttonsColor,
                           );
                         },
                       )
                     : LikeButton(
                         mediaItem: mediaItem,
                         size: 22.0,
+                        color: buttonsColor,
                       );
           case 'Previous':
             return StreamBuilder<QueueState>(
@@ -850,7 +862,8 @@ class ControlButtons extends StatelessWidget {
                             width: miniplayer ? 40.0 : 65.0,
                             child: CircularProgressIndicator(
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                Theme.of(context).iconTheme.color!,
+                                buttonsColor ??
+                                    Theme.of(context).iconTheme.color!,
                               ),
                             ),
                           ),
@@ -888,24 +901,34 @@ class ControlButtons extends StatelessWidget {
                                       elevation: 10,
                                       tooltip:
                                           AppLocalizations.of(context)!.pause,
-                                      backgroundColor: Colors.white,
+                                      backgroundColor:
+                                          buttonsColor ?? Colors.white,
                                       onPressed: audioHandler.pause,
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.pause_rounded,
                                         size: 40.0,
-                                        color: Colors.black,
+                                        color: buttonsColor != null
+                                            ? HSLColor.fromColor(
+                                                buttonsColor!,
+                                              ).withLightness(0.3).toColor()
+                                            : Colors.black,
                                       ),
                                     )
                                   : FloatingActionButton(
                                       elevation: 10,
                                       tooltip:
                                           AppLocalizations.of(context)!.play,
-                                      backgroundColor: Colors.white,
+                                      backgroundColor:
+                                          buttonsColor ?? Colors.white,
                                       onPressed: audioHandler.play,
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.play_arrow_rounded,
                                         size: 40.0,
-                                        color: Colors.black,
+                                        color: buttonsColor != null
+                                            ? HSLColor.fromColor(
+                                                buttonsColor!,
+                                              ).withLightness(0.3).toColor()
+                                            : Colors.black,
                                       ),
                                     ),
                             ),
@@ -1971,7 +1994,7 @@ class NameNControls extends StatelessWidget {
   final bool offline;
   final double width;
   final double height;
-  // final List<Color?>? gradientColor;
+  final Color? gradientColor;
   final PanelController panelController;
   final AudioPlayerHandler audioHandler;
 
@@ -1979,7 +2002,7 @@ class NameNControls extends StatelessWidget {
     required this.width,
     required this.height,
     required this.mediaItem,
-    // required this.gradientColor,
+    required this.gradientColor,
     required this.audioHandler,
     required this.panelController,
     this.offline = false,
@@ -2179,6 +2202,9 @@ class NameNControls extends StatelessWidget {
                         audioHandler.seek(newPosition);
                       },
                       audioHandler: audioHandler,
+                      color: HSLColor.fromColor(
+                        gradientColor ?? Colors.white,
+                      ).withLightness(0.8).toColor(),
                     );
                   },
                 ),
@@ -2212,8 +2238,11 @@ class NameNControls extends StatelessWidget {
                                       snapshot.data ?? false;
                                   return IconButton(
                                     icon: shuffleModeEnabled
-                                        ? const Icon(
+                                        ? Icon(
                                             Icons.shuffle_rounded,
+                                            color: HSLColor.fromColor(
+                                              gradientColor ?? Colors.white,
+                                            ).withLightness(0.8).toColor(),
                                           )
                                         : Icon(
                                             Icons.shuffle_rounded,
@@ -2234,11 +2263,20 @@ class NameNControls extends StatelessWidget {
                                 },
                               ),
                               if (!offline)
-                                LikeButton(mediaItem: mediaItem, size: 25.0),
+                                LikeButton(
+                                  mediaItem: mediaItem,
+                                  size: 25.0,
+                                  color: HSLColor.fromColor(
+                                    gradientColor ?? Colors.white,
+                                  ).withLightness(0.8).toColor(),
+                                ),
                             ],
                           ),
                           ControlButtons(
                             audioHandler,
+                            buttonsColor: HSLColor.fromColor(
+                              gradientColor ?? Colors.white,
+                            ).withLightness(0.8).toColor(),
                           ),
                           Column(
                             mainAxisSize: MainAxisSize.min,
@@ -2257,11 +2295,17 @@ class NameNControls extends StatelessWidget {
                                       Icons.repeat_rounded,
                                       color: Theme.of(context).disabledColor,
                                     ),
-                                    const Icon(
+                                    Icon(
                                       Icons.repeat_rounded,
+                                      color: HSLColor.fromColor(
+                                        gradientColor ?? Colors.white,
+                                      ).withLightness(0.8).toColor(),
                                     ),
-                                    const Icon(
+                                    Icon(
                                       Icons.repeat_one_rounded,
+                                      color: HSLColor.fromColor(
+                                        gradientColor ?? Colors.white,
+                                      ).withLightness(0.8).toColor(),
                                     ),
                                   ];
                                   const cycleModes = [
@@ -2295,6 +2339,9 @@ class NameNControls extends StatelessWidget {
                                   data: MediaItemConverter.mediaItemToMap(
                                     mediaItem,
                                   ),
+                                  color: HSLColor.fromColor(
+                                    gradientColor ?? Colors.white,
+                                  ).withLightness(0.8).toColor(),
                                 ),
                             ],
                           ),

@@ -451,6 +451,7 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
             AudioSource.uri(Uri.file(mediaItem.extras!['url'].toString()));
       } else {
         if (downloadsBox != null &&
+            downloadsBox!.isOpen &&
             downloadsBox!.containsKey(mediaItem.id) &&
             useDown) {
           Logger.root.info('Found ${mediaItem.id} in downloads');
@@ -563,8 +564,8 @@ class AudioPlayerHandlerImpl extends BaseAudioHandler
           }
         }
       }
-    } catch (e) {
-      Logger.root.severe('Error while creating audiosource', e);
+    } catch (e, stacktrace) {
+      Logger.root.severe('Error while creating audiosource', e, stacktrace);
     }
     if (audioSource != null) {
       _mediaItemExpando[audioSource] = mediaItem;

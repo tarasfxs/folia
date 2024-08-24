@@ -156,6 +156,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                   const EdgeInsets.symmetric(horizontal: 10),
                               child: positionSlider(
                                 mediaItem?.duration?.inSeconds.toDouble(),
+                                null,
                               ),
                             ),
                           ],
@@ -165,9 +166,9 @@ class _MiniPlayerState extends State<MiniPlayer> {
                   } else {
                     final Color miniplayerColor =
                         (value[0]?.computeLuminance() ?? 0) > 0.4
-                            ? (value[1]?.computeLuminance() ?? 0) > 0.5
+                            ? (value[1]?.computeLuminance() ?? 0) > 0.4
                                 ? HSLColor.fromColor(value[0] ?? Colors.black)
-                                    .withLightness(0.5)
+                                    .withLightness(0.4)
                                     .toColor()
                                 : (value[1] ?? Colors.black)
                             : value[0] ?? Colors.black;
@@ -206,6 +207,9 @@ class _MiniPlayerState extends State<MiniPlayer> {
                                   const EdgeInsets.symmetric(horizontal: 10),
                               child: positionSlider(
                                 mediaItem?.duration?.inSeconds.toDouble(),
+                                HSLColor.fromColor(miniplayerColor)
+                                    .withLightness(0.8)
+                                    .toColor(),
                               ),
                             ),
                           ],
@@ -244,13 +248,21 @@ class _MiniPlayerState extends State<MiniPlayer> {
         isDummy ? 'Now Playing' : title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontSize: 15),
+        style: TextStyle(
+          fontSize: 15,
+          color: buttonsColor,
+        ),
       ),
       subtitle: Text(
         isDummy ? 'Unknown' : subtitle,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontSize: 13),
+        style: TextStyle(
+          fontSize: 13,
+          color: buttonsColor != null
+              ? HSLColor.fromColor(buttonsColor).withLightness(0.7).toColor()
+              : null,
+        ),
       ),
       leading: Hero(
         tag: 'currentArtwork',
@@ -274,7 +286,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
     );
   }
 
-  StreamBuilder<Duration> positionSlider(double? maxDuration) {
+  StreamBuilder<Duration> positionSlider(double? maxDuration, Color? color) {
     return StreamBuilder<Duration>(
       stream: AudioService.position,
       builder: (context, snapshot) {
@@ -285,10 +297,10 @@ class _MiniPlayerState extends State<MiniPlayer> {
             ? const SizedBox()
             : SliderTheme(
                 data: SliderTheme.of(context).copyWith(
-                  activeTrackColor: Colors.white,
+                  activeTrackColor: color ?? Colors.white,
                   inactiveTrackColor: Colors.transparent,
                   trackHeight: 0.5,
-                  thumbColor: Colors.white,
+                  thumbColor: color ?? Colors.white,
                   thumbShape: const RoundSliderThumbShape(
                     enabledThumbRadius: 1.0,
                   ),
