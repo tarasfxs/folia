@@ -2204,7 +2204,7 @@ class NameNControls extends StatelessWidget {
                       audioHandler: audioHandler,
                       color: HSLColor.fromColor(
                         gradientColor ?? Colors.white,
-                      ).withLightness(0.8).toColor(),
+                      ).withLightness(0.9).toColor(),
                     );
                   },
                 ),
@@ -2242,7 +2242,7 @@ class NameNControls extends StatelessWidget {
                                             Icons.shuffle_rounded,
                                             color: HSLColor.fromColor(
                                               gradientColor ?? Colors.white,
-                                            ).withLightness(0.8).toColor(),
+                                            ).withLightness(0.9).toColor(),
                                           )
                                         : Icon(
                                             Icons.shuffle_rounded,
@@ -2268,7 +2268,7 @@ class NameNControls extends StatelessWidget {
                                   size: 25.0,
                                   color: HSLColor.fromColor(
                                     gradientColor ?? Colors.white,
-                                  ).withLightness(0.8).toColor(),
+                                  ).withLightness(0.9).toColor(),
                                 ),
                             ],
                           ),
@@ -2276,7 +2276,7 @@ class NameNControls extends StatelessWidget {
                             audioHandler,
                             buttonsColor: HSLColor.fromColor(
                               gradientColor ?? Colors.white,
-                            ).withLightness(0.8).toColor(),
+                            ).withLightness(0.9).toColor(),
                           ),
                           Column(
                             mainAxisSize: MainAxisSize.min,
@@ -2299,13 +2299,13 @@ class NameNControls extends StatelessWidget {
                                       Icons.repeat_rounded,
                                       color: HSLColor.fromColor(
                                         gradientColor ?? Colors.white,
-                                      ).withLightness(0.8).toColor(),
+                                      ).withLightness(0.9).toColor(),
                                     ),
                                     Icon(
                                       Icons.repeat_one_rounded,
                                       color: HSLColor.fromColor(
                                         gradientColor ?? Colors.white,
-                                      ).withLightness(0.8).toColor(),
+                                      ).withLightness(0.9).toColor(),
                                     ),
                                   ];
                                   const cycleModes = [
@@ -2341,7 +2341,7 @@ class NameNControls extends StatelessWidget {
                                   ),
                                   color: HSLColor.fromColor(
                                     gradientColor ?? Colors.white,
-                                  ).withLightness(0.8).toColor(),
+                                  ).withLightness(0.9).toColor(),
                                 ),
                             ],
                           ),

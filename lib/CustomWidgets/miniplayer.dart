@@ -166,11 +166,9 @@ class _MiniPlayerState extends State<MiniPlayer> {
                   } else {
                     final Color miniplayerColor =
                         (value[0]?.computeLuminance() ?? 0) > 0.4
-                            ? (value[1]?.computeLuminance() ?? 0) > 0.4
-                                ? HSLColor.fromColor(value[0] ?? Colors.black)
-                                    .withLightness(0.4)
-                                    .toColor()
-                                : (value[1] ?? Colors.black)
+                            ? HSLColor.fromColor(value[0] ?? Colors.black)
+                                .withLightness(0.4)
+                                .toColor()
                             : value[0] ?? Colors.black;
                     return Container(
                       decoration: BoxDecoration(
@@ -199,7 +197,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                               isLocalImage: isLocal,
                               isDummy: mediaItem == null,
                               buttonsColor: HSLColor.fromColor(miniplayerColor)
-                                  .withLightness(0.8)
+                                  .withLightness(0.9)
                                   .toColor(),
                             ),
                             Padding(
@@ -208,7 +206,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                               child: positionSlider(
                                 mediaItem?.duration?.inSeconds.toDouble(),
                                 HSLColor.fromColor(miniplayerColor)
-                                    .withLightness(0.8)
+                                    .withLightness(0.9)
                                     .toColor(),
                               ),
                             ),
@@ -260,7 +258,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
         style: TextStyle(
           fontSize: 13,
           color: buttonsColor != null
-              ? HSLColor.fromColor(buttonsColor).withLightness(0.7).toColor()
+              ? HSLColor.fromColor(buttonsColor).withLightness(0.85).toColor()
               : null,
         ),
       ),
