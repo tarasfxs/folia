@@ -21,6 +21,8 @@ An Open-Source Music Player App for all your needs!
 > [!NOTE] 
 > Coming soon...
 
+**Android only**
+
 ## Translations
 - [Turkish :tr:](/README.TR.md)
 - [Spanish :es:](/README.ES.md)
