@@ -4,22 +4,22 @@
 
 オープンソースの音楽プレイヤーアプリです！
 
-[![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/) ![Release](https://img.shields.io/github/v/release/Sangwan5688/BlackHole) ![Downloads](https://img.shields.io/github/downloads/Sangwan5688/BlackHole/total)
-[![Build](https://github.com/Sangwan5688/BlackHole/actions/workflows/flutter.yml/badge.svg)](https://github.com/Sangwan5688/BlackHole/actions/workflows/flutter.yml)
+[![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/) ![Release](https://img.shields.io/github/v/release/BrightDV/BlackHole) ![Downloads](https://img.shields.io/github/downloads/BrightDV/BlackHole/total)
+[![Build](https://github.com/BrightDV/BlackHole/actions/workflows/flutter.yml/badge.svg)](https://github.com/BrightDV/BlackHole/actions/workflows/flutter.yml)
 [![Translation-Status](https://hosted.weblate.org/widgets/blackhole/-/translations/svg-badge.svg)](https://hosted.weblate.org/engage/blackhole/)
 
 ### リポジトリに:star:をつけるのを忘れずに
 
-[![GitHub stars](https://img.shields.io/github/stars/Sangwan5688/BlackHole.svg?style=social&label=Star)](https://github.com//Sangwan5688/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/Sangwan5688/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/Sangwan5688.svg?style=social&label=Follow)
+[![GitHub stars](https://img.shields.io/github/stars/BrightDV/BlackHole.svg?style=social&label=Star)](https://github.com//BrightDV/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/BrightDV/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/BrightDV.svg?style=social&label=Follow)
 
 ## ダウンロード
 
 [<img src="get_website.png"
      alt="サイトからダウンロード"
-     height="90">](https://sangwan5688.github.io/download/)
+     height="90">](https://BrightDV.github.io/download/)
 [<img src="get_github.png"
      alt="GitHub からダウンロード"
-     height="90">](https://github.com/Sangwan5688/BlackHole/releases)
+     height="90">](https://github.com/BrightDV/BlackHole/releases)
 [<img src="get_telegram.png"
      alt="Telegram のチャンネルに参加"
      height="90">](https://t.me/blackhole_official)
@@ -83,7 +83,7 @@
 
 ## スクリーンショット
 
-<img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true" width="32%">
+<img src="https://github.com/BrightDV/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true" width="32%"> <img src="https://github.com/BrightDV/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true" width="32%"> <img src="https://github.com/BrightDV/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true" width="32%"> <img src="https://github.com/BrightDV/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true" width="32%"> <img src="https://github.com/BrightDV/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true" width="32%"> <img src="https://github.com/BrightDV/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true" width="32%">
 
 ## ライセンス
 
@@ -112,7 +112,7 @@ how to obtain the original software, should clearly STATE ALL CHANGES made and s
 Use of this software under any "non-free" license is NOT permitted.
 ```
 
-詳しくは、[GNU 一般公衆利用許諾契約書](https://github.com/Sangwan5688/BlackHole/blob/main/LICENSE)をご覧ください。
+詳しくは、[GNU 一般公衆利用許諾契約書](https://github.com/BrightDV/BlackHole/blob/main/LICENSE)をご覧ください。
 
 ## ソースからのビルド
 
@@ -120,7 +120,7 @@ Use of this software under any "non-free" license is NOT permitted.
 2. masterブランチから最新のソースコードを取得します。
 
 ```
-git clone https://github.com/Sangwan5688/BlackHole.git
+git clone https://github.com/BrightDV/BlackHole.git
 ```
 
 3. Android StudioまたはVS Codeでアプリを実行します。もしくはコマンドラインから:
@@ -132,11 +132,11 @@ flutter run
 
 ## 貢献
 
-貢献を歓迎します。先に[貢献ガイドライン](https://github.com/Sangwan5688/BlackHole/blob/main/CONTRIBUTING.md)をお読みください。
+貢献を歓迎します。先に[貢献ガイドライン](https://github.com/BrightDV/BlackHole/blob/main/CONTRIBUTING.md)をお読みください。
 
 ## 問題にお困りですか？
 
-起こりうる[よくある問題](https://github.com/Sangwan5688/BlackHole/wiki/Common-Issues)をご覧ください。問題の回答が見つからなければ、お気軽にIssueを作成してください :)
+起こりうる[よくある問題](https://github.com/BrightDV/BlackHole/wiki/Common-Issues)をご覧ください。問題の回答が見つからなければ、お気軽にIssueを作成してください :)
 
 ## ベータ版をテストしたいですか？助けが必要ですか？？
 
@@ -148,7 +148,7 @@ flutter run
 
 ## 最新情報
 
-すべてのchangelogは[wikiページ](https://github.com/Sangwan5688/BlackHole/wiki/Changelog)をご覧ください
+すべてのchangelogは[wikiページ](https://github.com/BrightDV/BlackHole/wiki/Changelog)をご覧ください
 
 ## 免責条項
 ```

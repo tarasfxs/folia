@@ -1,5 +1,5 @@
 /*
- *  This file is part of BlackHole (https://github.com/Sangwan5688/BlackHole).
+ *  This file is part of BlackHole (https://github.com/BrightDV/BlackHole).
  * 
  * BlackHole is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -158,7 +158,7 @@ class _AboutPageState extends State<AboutPage> {
                                       Navigator.pop(context);
                                       launchUrl(
                                         Uri.parse(
-                                          'https://sangwan5688.github.io/download?platform=${Platform.operatingSystem}&arch=$arch',
+                                          'https://BrightDV.github.io/download?platform=${Platform.operatingSystem}&arch=$arch',
                                         ),
                                         mode: LaunchMode.externalApplication,
                                       );
@@ -200,7 +200,7 @@ class _AboutPageState extends State<AboutPage> {
                           Share.share(
                             '${AppLocalizations.of(
                               context,
-                            )!.shareAppText}: https://sangwan5688.github.io/',
+                            )!.shareAppText}: https://BrightDV.github.io/',
                           );
                         },
                         dense: true,
@@ -392,7 +392,7 @@ class _AboutPageState extends State<AboutPage> {
                                               Navigator.pop(context);
                                               launchUrl(
                                                 Uri.parse(
-                                                  'https://instagram.com/sangwan5688',
+                                                  'https://instagram.com/BrightDV',
                                                 ),
                                                 mode: LaunchMode
                                                     .externalApplication,

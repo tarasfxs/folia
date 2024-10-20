@@ -1,15 +1,15 @@
-<img width="125px" src="https://github.com/Sangwan5688/BlackHole/blob/main/assets/icon-white-trans.png" align="center" />
+<img width="125px" src="https://github.com/BrightDV/BlackHole/blob/main/assets/icon-white-trans.png" align="center" />
 
 # BlackHole
 
 Удивительный музыкальный плеер, созданный с помощью Flutter!
 
-[![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/) ![Release](https://img.shields.io/github/v/release/Sangwan5688/BlackHole) ![Downloads](https://img.shields.io/github/downloads/Sangwan5688/BlackHole/total)
-[![Build](https://github.com/Sangwan5688/BlackHole/actions/workflows/flutter.yml/badge.svg)](https://github.com/Sangwan5688/BlackHole/actions/workflows/flutter.yml)
+[![made-with-flutter](https://img.shields.io/badge/Made%20with-Flutter-1f425f.svg)](https://flutter.dev/) ![Release](https://img.shields.io/github/v/release/BrightDV/BlackHole) ![Downloads](https://img.shields.io/github/downloads/BrightDV/BlackHole/total)
+[![Build](https://github.com/BrightDV/BlackHole/actions/workflows/flutter.yml/badge.svg)](https://github.com/BrightDV/BlackHole/actions/workflows/flutter.yml)
 
 ### Не забудьте поставить :star: на репозиторий
 
-[![GitHub stars](https://img.shields.io/github/stars/Sangwan5688/BlackHole.svg?style=social&label=Star)](https://github.com//Sangwan5688/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/Sangwan5688/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/Sangwan5688.svg?style=social&label=Follow)
+[![GitHub stars](https://img.shields.io/github/stars/BrightDV/BlackHole.svg?style=social&label=Star)](https://github.com//BrightDV/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/BrightDV/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/BrightDV.svg?style=social&label=Follow)
 
 ## Скачать
 
@@ -23,7 +23,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [<img src="https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white"
      alt="Download from GitHub"
-     height="60">](https://github.com/Sangwan5688/BlackHole/releases)
+     height="60">](https://github.com/BrightDV/BlackHole/releases)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [<img src="https://img.shields.io/badge/Telegram-2CA5E0?logo=telegram&logoColor=white"
      alt="Join Telegram Channel"
@@ -79,7 +79,7 @@
 Проверьте это сами :)
 
 ## Скриншоты
-<img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true" width="32%"> <img src="https://github.com/Sangwan5688/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true" width="32%">
+<img src="https://github.com/BrightDV/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true" width="32%"> <img src="https://github.com/BrightDV/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true" width="32%"> <img src="https://github.com/BrightDV/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true" width="32%"> <img src="https://github.com/BrightDV/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true" width="32%"> <img src="https://github.com/BrightDV/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true" width="32%"> <img src="https://github.com/BrightDV/BlackHole/blob/main/fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true" width="32%">
 
 ## Лицензия
 ```
@@ -93,7 +93,7 @@ BlackHole is distributed in the hope that it will be useful, but WITHOUT ANY WAR
 without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.
 ```
-[Показать Лицензию](https://github.com/Sangwan5688/BlackHole/blob/main/LICENSE)
+[Показать Лицензию](https://github.com/BrightDV/BlackHole/blob/main/LICENSE)
 
 ## Сборка из исходников
 
@@ -101,7 +101,7 @@ See the GNU General Public License for more details.
 2. Получение последней версии исходного кода из основной ветви.
 
 ```
-git clone https://github.com/Sangwan5688/BlackHole.git
+git clone https://github.com/BrightDV/BlackHole.git
 ```
 
 3. Запустите приложение с помощью Android Studio или VS Code. Или из командной строки:
@@ -113,11 +113,11 @@ flutter run
 
 ## Вклад
 
-Вклад в развитие сайта приветствуется. Пожалуйста, ознакомьтесь с нашим [руководством по внесению вкладов](https://github.com/Sangwan5688/BlackHole/blob/main/CONTRIBUTING.md), прежде чем вносить их.
+Вклад в развитие сайта приветствуется. Пожалуйста, ознакомьтесь с нашим [руководством по внесению вкладов](https://github.com/BrightDV/BlackHole/blob/main/CONTRIBUTING.md), прежде чем вносить их.
 
 ## Столкнулись с какой-либо проблемой?
 
-Посмотрите на некоторые [общие проблемой](https://github.com/Sangwan5688/BlackHole/wiki/Common-Issues), с которыми вы можете столкнуться. Если вашей проблемы там нет, не стесняйтесь задавать вопрос по данной проблеме :)
+Посмотрите на некоторые [общие проблемой](https://github.com/BrightDV/BlackHole/wiki/Common-Issues), с которыми вы можете столкнуться. Если вашей проблемы там нет, не стесняйтесь задавать вопрос по данной проблеме :)
 
 ## Хотите протестировать бета-версию? Нужна помощь??
 
@@ -129,4 +129,4 @@ flutter run
 
 ## Изменения
 
-Чтобы прочитать полные изменения, посетите [wiki страницу](https://github.com/Sangwan5688/BlackHole/wiki/Changelog)
+Чтобы прочитать полные изменения, посетите [wiki страницу](https://github.com/BrightDV/BlackHole/wiki/Changelog)
