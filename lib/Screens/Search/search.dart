@@ -462,9 +462,9 @@ class _SearchPageState extends State<SearchPage> {
                                               section['items'] as List?;
                                           String localizedTitle = title;
                                           if (localizedTitle == 'Top Result') {
-                                            /* localizedTitle =
+                                            localizedTitle =
                                                 AppLocalizations.of(context)!
-                                                    .topResult; */
+                                                    .topResult;
                                           } else if (localizedTitle ==
                                               'Artists') {
                                             localizedTitle =
@@ -477,16 +477,16 @@ class _SearchPageState extends State<SearchPage> {
                                                     .songs;
                                           } else if (localizedTitle ==
                                               'Podcasts') {
-                                            /* localizedTitle =
+                                            localizedTitle =
                                                 AppLocalizations.of(context)!
-                                                    .podcasts; */
+                                                    .podcasts;
                                           } else if (localizedTitle ==
                                               'Albums') {
                                             localizedTitle =
                                                 AppLocalizations.of(context)!
                                                     .albums;
                                           } else if (localizedTitle ==
-                                              'PLaylists') {
+                                              'Playlists') {
                                             localizedTitle =
                                                 AppLocalizations.of(context)!
                                                     .playlists;
