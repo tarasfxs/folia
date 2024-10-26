@@ -662,12 +662,15 @@ class _PlayScreenState extends State<PlayScreen> {
                           ),
 
                           // lyrics under the player
-                          LyricsProvider(
-                            mediaItem: mediaItem,
-                            width: constraints.maxWidth,
-                            offline: offline,
-                            getLyricsOnline: getLyricsOnline,
-                          ),
+                          if (mediaItem.extras?['should_fetch_lyrics'] != null)
+                            if (mediaItem.extras?['should_fetch_lyrics'] !=
+                                false)
+                              LyricsProvider(
+                                mediaItem: mediaItem,
+                                width: constraints.maxWidth,
+                                offline: offline,
+                                getLyricsOnline: getLyricsOnline,
+                              ),
                         ],
                       ),
                     );
@@ -963,6 +966,40 @@ class ControlButtons extends StatelessWidget {
                     icon: 'download',
                     data: MediaItemConverter.mediaItemToMap(mediaItem),
                   );
+          case '-30':
+            return StreamBuilder<QueueState>(
+              stream: audioHandler.queueState,
+              builder: (context, snapshot) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: IconButton(
+                    icon: const Icon(Icons.replay_30_rounded),
+                    iconSize: miniplayer ? 24.0 : 45.0,
+                    tooltip: AppLocalizations.of(context)!.skipPrevious,
+                    color: buttonsColor ?? Theme.of(context).iconTheme.color,
+                    onPressed: () async =>
+                        await audioHandler.customAction('rewind'),
+                  ),
+                );
+              },
+            );
+          case '+30':
+            return StreamBuilder<QueueState>(
+              stream: audioHandler.queueState,
+              builder: (context, snapshot) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: IconButton(
+                    icon: const Icon(Icons.forward_30_rounded),
+                    iconSize: miniplayer ? 24.0 : 45.0,
+                    tooltip: AppLocalizations.of(context)!.skipNext,
+                    color: buttonsColor ?? Theme.of(context).iconTheme.color,
+                    onPressed: () async =>
+                        await audioHandler.customAction('fastForward'),
+                  ),
+                );
+              },
+            );
           default:
             break;
         }
@@ -2277,6 +2314,9 @@ class NameNControls extends StatelessWidget {
                             buttonsColor: HSLColor.fromColor(
                               gradientColor ?? Colors.white,
                             ).withLightness(0.9).toColor(),
+                            buttons: mediaItem.extras?['type'] == 'episode'
+                                ? ['-30', 'Play/Pause', '+30']
+                                : ['Previous', 'Play/Pause', 'Next'],
                           ),
                           Column(
                             mainAxisSize: MainAxisSize.min,
