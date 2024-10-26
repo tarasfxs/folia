@@ -662,15 +662,21 @@ class _PlayScreenState extends State<PlayScreen> {
                           ),
 
                           // lyrics under the player
-                          if (mediaItem.extras?['should_fetch_lyrics'] != null)
-                            if (mediaItem.extras?['should_fetch_lyrics'] !=
-                                false)
-                              LyricsProvider(
-                                mediaItem: mediaItem,
-                                width: constraints.maxWidth,
-                                offline: offline,
-                                getLyricsOnline: getLyricsOnline,
-                              ),
+                          if (mediaItem.extras?['should_fetch_lyrics'] == null)
+                            LyricsProvider(
+                              mediaItem: mediaItem,
+                              width: constraints.maxWidth,
+                              offline: offline,
+                              getLyricsOnline: getLyricsOnline,
+                            )
+                          else if (mediaItem.extras?['should_fetch_lyrics'] !=
+                              false)
+                            LyricsProvider(
+                              mediaItem: mediaItem,
+                              width: constraints.maxWidth,
+                              offline: offline,
+                              getLyricsOnline: getLyricsOnline,
+                            ),
                         ],
                       ),
                     );
