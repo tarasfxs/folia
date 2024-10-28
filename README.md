@@ -1,6 +1,7 @@
 > [!WARNING] 
 > The original app and its code have been deleted. I use this app since a lot of time, so I decided to continue the development by adding features that I find useful, updating the codebase...
-> Releases will be signed with my own signature, so a backup is needed to switch from the original app, but the app can be installed alongside the original.
+> Releases will be signed with my own signature, so a backup is needed to switch from the original app, but the app can be installed alongside the original.<br>
+> Source: [original repo (Wayback Machine)](https://web.archive.org/web/20240312134329/https://github.com/Sangwan5688/BlackHole)
 
 ![Repo Banner](https://user-images.githubusercontent.com/87353286/144381080-faf8e557-7909-43a1-a8e2-208936e5a8f8.png)
 
@@ -19,9 +20,9 @@ An Open-Source Music Player App for all your needs!
 ## Download
 
 > [!NOTE] 
-> Coming soon...
+> Coming really soon...
 
-**Android only**
+### Android only
 
 ## Translations
 - [Turkish :tr:](/README.TR.md)
@@ -33,13 +34,12 @@ An Open-Source Music Player App for all your needs!
 - [Belarusian :belarus:](/README.BE.md)
 - [Indonesian :indonesia:](/README.ID.md)
 
-[Translate App on Weblate](https://hosted.weblate.org/projects/blackhole/translations/)
-
 ## Features
 
 - High Streaming Quality (320kbps AAC)
-- Song, Album, Artist and Playlist Search
+- Song, Album, Artist Playlist and Podcast Search
 - Language Specific Promoted Playlists
+- Podcasts streaming
 - Trending Songs
 - Artist and Genre Radios
 - Support 15+ music languages
@@ -77,14 +77,14 @@ Check it yourself :)
 ## Screenshots
 
 > [!NOTE] 
-> The screenshots are not updated. Now the miniplayer is colored, as well as the player's button (among other changes).
+> The screenshots are not updated. Now the miniplayer has color, as well as the player's buttons (among other changes).
 
 <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/1.png?raw=true" width="32%"> <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/2.png?raw=true" width="32%"> <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/3.png?raw=true" width="32%"> <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/4.png?raw=true" width="32%"> <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/5.png?raw=true" width="32%"> <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/6.png?raw=true" width="32%">
 
 ## License
 
 ```
-Copyright © 2021 Ankit Sangwan
+Copyright © 2024 BrightDV
 
 BlackHole is a free software licensed under GPL v3.0
 It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
