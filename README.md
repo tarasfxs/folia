@@ -18,11 +18,11 @@ An Open-Source Music Player App for all your needs!
 [![GitHub stars](https://img.shields.io/github/stars/BrightDV/BlackHole.svg?style=social&label=Star)](https://github.com//BrightDV/BlackHole) ![GitHub forks](https://img.shields.io/github/forks/BrightDV/BlackHole.svg?style=social&label=Forks) ![GitHub followers](https://img.shields.io/github/followers/BrightDV.svg?style=social&label=Follow)
 
 ## Download
-
-> [!NOTE] 
-> Coming really soon...
-
 ### Android only
+
+[<img src="get-it-on-github.png"
+     alt="Download from GitHub"
+     height="80">](https://github.com/BrightDV/BlackHole/releases/latest)
 
 ## Translations
 - [Turkish :tr:](/README.TR.md)
