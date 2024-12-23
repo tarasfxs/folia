@@ -350,7 +350,10 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
 
                         data = (await SaavnAPI()
                             .fetchAlbumSongs(widget.albumId))['songs'] as List;
+                        int trackNumber = 1;
                         for (final items in data) {
+                          items['trackNumber'] = trackNumber;
+                          items['trackCount'] = data.length;
                           down.prepareDownload(
                             context,
                             items as Map,
@@ -361,6 +364,7 @@ class _AlbumDownloadButtonState extends State<AlbumDownloadButton> {
                           setState(() {
                             done++;
                           });
+                          trackNumber++;
                         }
                         finished = true;
                       },

@@ -497,6 +497,8 @@ class Download with ChangeNotifier {
               genre: data['language'].toString(),
               year: data['year'].toString(),
               lyrics: lyrics,
+              trackNumber: data['trackNumber']?.toString(),
+              trackTotal: data['trackTotal']?.toString(),
               comment: 'BlackHole',
             );
             Logger.root.info('Started tag editing');
